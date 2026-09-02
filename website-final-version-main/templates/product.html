@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block og_type %}product{% endblock %}
+{% block head_extra %}
+<link rel="preload" as="image" href="{{ product.image }}" fetchpriority="high">
+{% endblock %}
+{% block content %}
+<div data-analytics-product-view="1" data-product-id="{{ product.id }}" data-price="{{ product.display_price }}" data-in-stock="{% if product.in_stock %}1{% else %}0{% endif %}" hidden></div>
+<div class="breadcrumbs" style="padding:8rem 1.5rem 0;max-width:1280px;margin:0 auto" itemscope itemtype="https://schema.org/BreadcrumbList">
+    <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="/" itemprop="item"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></span>
+    <span>/</span>
+    <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="/shop" itemprop="item"><span itemprop="name">Shop</span></a><meta itemprop="position" content="2"></span>
+    <span>/</span>
+    <span class="current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name">{{ product.name }}</span><meta itemprop="position" content="3"></span>
+</div>
+<div class="product-detail" itemscope itemtype="https://schema.org/Product">
+    <div class="product-gallery fade-up">
+        <img src="{{ product.image }}" alt="{{ product.name }} - Buy organic {{ product.name }} online in Pakistan" itemprop="image" fetchpriority="high" width="600" height="600">
+    </div>
+    <div class="product-detail-info fade-up">
+        <div class="product-name" itemprop="name">{{ product.name }}</div>
+        <meta itemprop="sku" content="AURA-{{ product.id }}">
+        <meta itemprop="brand" content="Aura Foods">
+        <link itemprop="url" href="{{ request.build_absolute_uri }}">
+        <meta itemprop="category" content="{% if product.category %}{{ product.category.name }}{% else %}Spices{% endif %}">
+        {% if site_rating_count %}
+        <div class="product-rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+            <meta itemprop="ratingValue" content="{{ site_rating_avg }}">
+            <meta itemprop="reviewCount" content="{{ site_rating_count }}">
+            <meta itemprop="bestRating" content="5">
+            <div class="stars"><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--gold)"/></svg><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--gold)"/></svg><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--gold)"/></svg><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--gold)"/></svg><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--gold)"/></svg></div>
+            <span>{{ site_rating_avg }} ({{ site_rating_count }} reviews)</span>
+        </div>
+        {% endif %}
+        <div class="product-detail-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+            <span itemprop="price">Rs.<span id="detailPrice">{{ product.display_price }}</span></span>
+            <meta itemprop="priceCurrency" content="PKR">
+            <link itemprop="availability" href="{% if product.in_stock %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}">
+            <meta itemprop="itemCondition" content="https://schema.org/NewCondition">
+            <meta itemprop="url" content="{{ request.build_absolute_uri }}">
+        </div>
+        <p class="product-detail-desc" itemprop="description">{{ product.description }}</p>
+        {% if product.spice_profile %}
+        <div class="product-disclosures" style="display:grid;gap:.75rem;margin:1rem 0;padding:1rem;border:1px solid var(--border);border-radius:.5rem;background:var(--surface)">
+            {% if product.spice_profile.claim_approved and product.spice_profile.claim_evidence_note %}
+            <div class="claim-badges" style="display:flex;flex-wrap:wrap;gap:.5rem">
+                {% if product.spice_profile.organic_claim %}<span class="badge">Organic claim verified</span>{% endif %}
+                {% if product.spice_profile.premium_claim %}<span class="badge">Premium claim verified</span>{% endif %}
+                {% if product.spice_profile.purity_claim_text %}<span class="badge">{{ product.spice_profile.purity_claim_text }}</span>{% endif %}
+            </div>
+            {% endif %}
+            {% if product.spice_profile.heat_level and product.spice_profile.heat_level != "none" %}<div><strong>Heat level:</strong> {{ product.spice_profile.get_heat_level_display }}</div>{% endif %}
+            {% if product.spice_profile.allergen_statement %}<div><strong>Allergen disclosure:</strong> {{ product.spice_profile.allergen_statement }}</div>{% endif %}
+            {% if product.spice_profile.storage_instructions %}<div><strong>Storage:</strong> {{ product.spice_profile.storage_instructions }}</div>{% endif %}
+            {% if product.spice_profile.usage_instructions %}<div><strong>Usage:</strong> {{ product.spice_profile.usage_instructions }}</div>{% endif %}
+            {% if product.spice_profile.food_grade_packaging_note %}<div><strong>Packaging:</strong> {{ product.spice_profile.food_grade_packaging_note }}</div>{% endif %}
+            {% if product.spice_profile.shelf_life_months %}<div><strong>Shelf life:</strong> {{ product.spice_profile.shelf_life_months }} months</div>{% endif %}
+            <div style="font-size:.8125rem;color:var(--muted)">
+                Review our <a href="/policies/food-product-disclosure/">food product disclosure</a> and <a href="/policies/allergen-disclosure/">allergen disclosure</a> before ordering.
+            </div>
+        </div>
+        {% else %}
+        <div style="font-size:.8125rem;color:var(--muted);margin:1rem 0">
+            Review our <a href="/policies/food-product-disclosure/">food product disclosure</a> and <a href="/policies/allergen-disclosure/">allergen disclosure</a> before ordering.
+        </div>
+        {% endif %}
+        <div class="product-options">
+            <div class="option-label">Weight</div>
+            <div class="option-buttons" id="grammageOptions">
+                {% if product.active_variants %}
+                {% for variant in product.active_variants %}
+                <button class="option-btn{% if forloop.first %} active{% endif %}" data-action="select-detail-gram" data-variant-id="{{ variant.id }}" data-product-id="{{ product.id }}" data-weight="{{ variant.display_weight }}" data-price="{{ variant.public_price }}" data-image="{{ variant.effective_image|default:product.image }}" data-sellable="{% if variant.is_sellable %}1{% else %}0{% endif %}">{{ variant.display_weight }}</button>
+                {% endfor %}
+                {% else %}
+                <button class="option-btn active" data-action="select-detail-gram" data-product-id="{{ product.id }}" data-weight="{{ product.display_weight }}" data-price="{{ product.display_price }}" data-image="{{ product.image }}" data-sellable="{% if product.in_stock %}1{% else %}0{% endif %}">{{ product.display_weight }}</button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="qty-selector">
+            <div class="option-label" style="margin-right:1rem">Quantity</div>
+            <button class="qty-btn" data-action="change-detail-qty" data-delta="-1">−</button>
+            <span class="qty-value" id="qtyInput">1</span>
+            <button class="qty-btn" data-action="change-detail-qty" data-delta="1">+</button>
+        </div>
+        <div class="product-actions">
+            <button class="btn-primary" id="addToCartBtn" data-action="add-detail-to-cart" data-product-name="{{ product.name }}" data-product-id="{{ product.id }}" {% if not product.in_stock %}disabled{% endif %}>{% if product.in_stock %}Add to Cart{% else %}Out of Stock{% endif %}</button>
+            <a href="https://wa.me/923352832967?text=Hi%2C%20I%20want%20to%20order%20{{ product.name | urlencode }}" target="_blank" rel="noopener" class="btn-secondary">Order on WhatsApp</a>
+        </div>
+
+        <div class="product-tabs">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-action="switch-tab" data-tab-group="product" data-tab="desc">Description</button>
+                <button class="tab-btn" data-action="switch-tab" data-tab-group="product" data-tab="ingredients">Ingredients</button>
+                <button class="tab-btn" data-action="switch-tab" data-tab-group="product" data-tab="usage">Usage</button>
+            </div>
+            <div class="tab-content active" data-tab-group="product" data-tab="desc">{{ product.description }}</div>
+            <div class="tab-content" data-tab-group="product" data-tab="ingredients">{% if product.spice_profile and product.spice_profile.ingredient_disclosure %}{{ product.spice_profile.ingredient_disclosure }}{% else %}{{ product.ingredients }}{% endif %}</div>
+            <div class="tab-content" data-tab-group="product" data-tab="usage">{% if product.spice_profile and product.spice_profile.usage_instructions %}{{ product.spice_profile.usage_instructions }}{% else %}{{ product.usage }}{% endif %}</div>
+        </div>
+    </div>
+</div>
+
+{% if related %}
+<section class="section" itemscope itemtype="https://schema.org/ItemList">
+    <div class="section-header">
+        <div class="section-eyebrow">You May Also Like</div>
+        <h2 class="section-title">Related Products</h2>
+    </div>
+    <div class="grid-4">
+        {% for p in related %}
+        <div class="product-card" itemscope itemtype="https://schema.org/Product">
+            <a href="/product/{{ p.slug }}/" class="card-link">
+                <img src="{{ p.image }}" alt="{{ p.name }} - Buy {{ p.name }} online in Pakistan" class="card-img" loading="lazy" itemprop="image" width="300" height="300">
+            </a>
+            <div class="product-info">
+                <a href="/product/{{ p.slug }}/" class="card-link">
+                    <div class="product-name" itemprop="name">{{ p.name }}</div>
+                    <div class="product-price-row">
+                        <span class="product-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><span itemprop="price" data-card-price>{{ p.display_price }}</span><meta itemprop="priceCurrency" content="PKR"><meta itemprop="availability" content="{% if p.in_stock %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"></span>
+                        <span class="product-weight" data-card-weight>{{ p.display_weight }}</span>
+                    </div>
+                </a>
+                {% if p.sellable_variants %}
+                <div class="gram-options">
+                    {% for variant in p.sellable_variants %}
+                    <button class="gram-btn{% if forloop.first %} active{% endif %}" data-action="select-card-gram" data-pid="{{ p.id }}" data-variant-id="{{ variant.id }}" data-weight="{{ variant.display_weight }}" data-price="{{ variant.public_price }}">{{ variant.display_weight }}</button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if p.default_variant and p.in_stock %}
+                <button class="btn-add-cart" data-action="add-card-to-cart" data-variant-id="{{ p.default_variant.id }}" data-price="{{ p.display_price }}" data-image="{{ p.default_variant.effective_image|default:p.image }}" data-weight="{{ p.display_weight }}" data-product-id="{{ p.id }}">Add to Cart</button>
+                {% else %}
+                <button class="btn-add-cart" disabled>Out of Stock</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

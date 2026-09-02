@@ -1,0 +1,67 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Commerce Operations | Aura Foods</title>
+  <link rel="stylesheet" href="{% static 'css/operations.css' %}">
+  <script src="{% static 'js/operations.js' %}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="topbar">
+    <div><img src="/static/uploads/logo.png?v=3" alt="Aura Foods logo" style="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.5rem"><strong>Aura Foods</strong><span>Commerce Operations</span></div>
+    <nav aria-label="Operations"><a href="/erp/">ERP</a><a href="/django-admin/">Administration</a><a href="/">Storefront</a></nav>
+  </header>
+  <main class="shell" id="main-content" tabindex="-1">
+    {% if messages %}<div class="notice-stack" aria-live="polite">{% for message in messages %}<p class="notice {{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
+    <div class="page-heading"><div><p class="eyebrow">Live operations</p><h1>Sales, delivery and CRM</h1></div><time>{% now "d M Y" %}</time></div>
+
+    {% if can_sales %}
+    <section aria-labelledby="sales-heading">
+      <h2 id="sales-heading">Sales control</h2>
+      <div class="metrics">
+        <div class="metric"><span>Open orders</span><strong>{{ order_count }}</strong></div>
+        <div class="metric"><span>Receivable</span><strong>PKR {{ receivable|floatformat:2 }}</strong></div>
+        <div class="metric alert"><span>Overdue invoices</span><strong>{{ overdue_count }}</strong></div>
+        <div class="metric"><span>Active allocations</span><strong>{{ reserved_count }}</strong></div>
+      </div>
+      <div class="split">
+        <div class="panel"><div class="panel-head"><h3>Recent orders</h3><a href="/api/sales/reports/sales-orders/">Report</a></div>
+          <div class="table-scroll"><table><thead><tr><th>Order</th><th>Customer</th><th>Status</th><th class="number">Total</th><th>Action</th></tr></thead><tbody>
+          {% for order in orders %}<tr><td>{{ order.number }}</td><td>{{ order.customer.business_name }}</td><td><span class="status">{{ order.get_status_display }}</span></td><td class="number">{{ order.total|floatformat:2 }}</td><td><div class="action-stack">
+            {% if order.shop_order.status == 'pending' and can_sales_manage %}<form method="post" action="/commerce-admin/orders/{{ order.id }}/transition/" class="inline-action" data-confirm="Confirm this order transition?">{% csrf_token %}<input type="hidden" name="status" value="confirmed"><button type="submit">Confirm</button></form><form method="post" action="/commerce-admin/orders/{{ order.id }}/transition/" class="inline-action" data-confirm="Cancel this order and release its stock reservation?">{% csrf_token %}<input type="hidden" name="status" value="cancelled"><button class="danger" type="submit">Cancel</button></form>{% endif %}
+            {% if order.shop_order.status == 'confirmed' and can_sales_manage %}<form method="post" action="/commerce-admin/orders/{{ order.id }}/transition/" class="inline-action" data-confirm="Start processing this order?">{% csrf_token %}<input type="hidden" name="status" value="processing"><button type="submit">Start processing</button></form><form method="post" action="/commerce-admin/orders/{{ order.id }}/transition/" class="inline-action" data-confirm="Cancel this order and release its stock reservation?">{% csrf_token %}<input type="hidden" name="status" value="cancelled"><button class="danger" type="submit">Cancel</button></form>{% endif %}
+            {% if order.shop_order.status == 'processing' %}{% if can_sales_dispatch %}<form method="post" action="/commerce-admin/orders/{{ order.id }}/transition/" class="inline-action" data-confirm="Dispatch this order and post ERP stock movements?">{% csrf_token %}<input type="hidden" name="status" value="shipped"><button type="submit">Dispatch</button></form>{% endif %}{% if can_sales_manage %}<form method="post" action="/commerce-admin/orders/{{ order.id }}/transition/" class="inline-action" data-confirm="Cancel this order and release its stock reservation?">{% csrf_token %}<input type="hidden" name="status" value="cancelled"><button class="danger" type="submit">Cancel</button></form>{% endif %}{% endif %}
+            {% if order.shop_order.status == 'shipped' and can_sales_dispatch %}<form method="post" action="/commerce-admin/orders/{{ order.id }}/transition/" class="inline-action" data-confirm="Mark this shipment delivered and capture COD where applicable?">{% csrf_token %}<input type="hidden" name="status" value="delivered"><button type="submit">Mark delivered</button></form>{% endif %}
+            {% if can_sales_dispatch and order.shop_order.status != 'shipped' and order.shop_order.status != 'delivered' and order.shop_order.status != 'cancelled' %}<form method="post" action="/commerce-admin/orders/{{ order.id }}/reallocate/" class="inline-action" data-confirm="Release active reservations and allocate current FEFO stock?">{% csrf_token %}<button class="secondary" type="submit">Reallocate stock</button></form>{% endif %}
+          </div></td></tr>{% empty %}<tr><td colspan="5">No integrated orders yet.</td></tr>{% endfor %}
+          </tbody></table></div></div>
+        <div class="panel"><div class="panel-head"><h3>Invoices</h3><a href="/api/sales/reports/customer-aging/">Aging</a></div>
+          <div class="table-scroll"><table><thead><tr><th>Invoice</th><th>Due</th><th>Status</th><th class="number">Amount</th><th class="number">Balance</th></tr></thead><tbody>
+          {% for invoice in invoices %}<tr><td>{{ invoice.number }}</td><td>{{ invoice.due_date|date:"d M Y" }}</td><td><span class="status">{{ invoice.get_status_display }}</span></td><td class="number">{{ invoice.amount|floatformat:2 }}</td><td class="number">{{ invoice.calculated_balance|floatformat:2 }}</td></tr>{% empty %}<tr><td colspan="5">No posted invoices yet.</td></tr>{% endfor %}
+          </tbody></table></div></div>
+      </div>
+      <div class="split">
+        {% if can_sales_payment %}<div class="panel"><div class="panel-head"><h3>Payments awaiting verification</h3></div><div class="task-list">{% for payment in pending_payments %}<form method="post" action="/commerce-admin/payments/{{ payment.id }}/verify/" class="workflow-row" data-confirm="Verify and post this customer payment?">{% csrf_token %}<div><strong>{{ payment.order.reference }} - PKR {{ payment.amount }}</strong><span>{{ payment.get_provider_display }}</span></div><label>Provider reference<input name="provider_reference" required></label><button type="submit">Verify</button></form>{% empty %}<p class="empty-state">No payments await verification.</p>{% endfor %}</div></div>{% endif %}
+        {% if can_sales_return or can_sales_payment %}<div class="panel"><div class="panel-head"><h3>Returns and refunds</h3></div><div class="task-list">
+          {% if can_sales_return %}{% for item in return_requests %}<form method="post" action="/commerce-admin/returns/{{ item.id }}/approve/" class="workflow-row" data-confirm="Approve this return into quarantine?">{% csrf_token %}<div><strong>{{ item.order.reference }}</strong><span>Return requested</span></div><button type="submit">Quarantine</button></form>{% endfor %}{% endif %}
+          {% if can_sales_return and can_quality_inspect %}{% for item in quarantined_returns %}<div class="workflow-row"><div><strong>{{ item.number }}</strong><span>Awaiting QA disposition</span></div><div class="action-stack"><form method="post" action="/commerce-admin/sales-returns/{{ item.id }}/qa-accept/" data-confirm="QA passed: restore traceable returned stock?">{% csrf_token %}<button type="submit">Accept stock</button></form><form method="post" action="/commerce-admin/sales-returns/{{ item.id }}/qa-reject/" data-confirm="Reject this return and reverse its customer credit?">{% csrf_token %}<input type="hidden" name="reason" value="Rejected during QA inspection."><button class="danger" type="submit">Reject return</button></form></div></div>{% endfor %}{% endif %}
+          {% if can_sales_return and can_sales_payment %}{% for item in refund_requests %}<form method="post" action="/commerce-admin/refunds/{{ item.id }}/approve/" class="workflow-row" data-confirm="Post this refund against available customer credit and refund the verified payment?">{% csrf_token %}<div><strong>{{ item.order.reference }} - PKR {{ item.amount }}</strong><span>Refund requested</span></div><button type="submit">Post refund</button></form>{% empty %}{% if not return_requests and not quarantined_returns %}<p class="empty-state">No return or refund actions are pending.</p>{% endif %}{% endfor %}{% endif %}
+        </div></div>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if can_crm %}
+    <section aria-labelledby="crm-heading"><h2 id="crm-heading">CRM workspace</h2>
+      <div class="metrics compact"><div class="metric"><span>Open pipeline</span><strong>{{ pipeline.count|default:0 }}</strong></div><div class="metric"><span>Expected value</span><strong>PKR {{ pipeline.value|default:0|floatformat:2 }}</strong></div><div class="metric alert"><span>Open complaints</span><strong>{{ open_complaints }}</strong></div></div>
+      <div class="split"><div class="panel"><div class="panel-head"><h3>Recent leads</h3><a href="/api/crm/reports/leads/">Report</a></div><div class="table-scroll"><table><thead><tr><th>Lead</th><th>Source</th><th>Status</th><th>Owner</th></tr></thead><tbody>{% for lead in leads %}<tr><td>{{ lead.business_name }}</td><td>{{ lead.source }}</td><td><span class="status">{{ lead.get_status_display }}</span></td><td>{{ lead.assigned_to|default:"Unassigned" }}</td></tr>{% empty %}<tr><td colspan="4">No leads yet.</td></tr>{% endfor %}</tbody></table></div></div>
+      <div class="panel"><div class="panel-head"><h3>Follow-ups due</h3><a href="/api/crm/reports/follow-up-due/">Report</a></div><div class="task-list">{% for task in due_followups %}<div class="workflow-row"><strong>{{ task.title }}</strong><span>{{ task.assigned_to }} - {{ task.due_date|date:"d M" }}</span></div>{% empty %}<p class="empty-state">No overdue follow-ups.</p>{% endfor %}</div></div></div>
+      {% if can_crm_manage %}<div class="panel source-panel"><div class="panel-head"><h3>Website CRM sources</h3></div><div class="task-list">{% for source in contact_sources %}<form method="post" action="/commerce-admin/crm/contact/{{ source.id }}/convert/" class="workflow-row" data-confirm="Create a CRM lead from this website inquiry?">{% csrf_token %}<div><strong>{{ source.name }}</strong><span>Website inquiry</span></div><button type="submit">Create lead</button></form>{% endfor %}{% for source in support_sources %}<form method="post" action="/commerce-admin/crm/support/{{ source.id }}/convert/" class="workflow-row" data-confirm="Create a CRM complaint from this support ticket?">{% csrf_token %}<div><strong>{{ source.subject }}</strong><span>Support {{ source.public_reference }}</span></div><button type="submit">Create issue</button></form>{% empty %}{% if not contact_sources %}<p class="empty-state">No unconverted website sources.</p>{% endif %}{% endfor %}</div></div>{% endif %}
+    </section>
+    {% endif %}
+  </main>
+</body>
+</html>

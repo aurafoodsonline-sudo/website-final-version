@@ -1,0 +1,40 @@
+name: Aura Foods Unified CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  django:
+    runs-on: ubuntu-latest
+    env:
+      DJANGO_DEBUG: "1"
+      DJANGO_SECRET_KEY: ci-local-secret-key
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip && pip install -r requirements-dev.txt
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py collectstatic --noinput
+      - run: python -m pytest -q
+      - name: Production deploy check
+        env:
+          DJANGO_DEBUG: "0"
+          DJANGO_SECRET_KEY: ci-production-shaped-secret-key-9g7K4m2Q8v6N1p5T3x0Z
+          DJANGO_ALLOWED_HOSTS: aurafoods.example.com
+          DATABASE_URL: postgresql://aura:aura@localhost:5432/aurafoods
+          MFA_SECRET_ENCRYPTION_KEY: s0f0H-WTod2GGbBDl220EItWk-_1YiivkcEk9503ZTg=
+          MEDIA_STORAGE_BACKEND: local
+          DJANGO_SECURE_SSL_REDIRECT: "1"
+        run: python manage.py check --deploy --fail-level WARNING
+      - run: python -m compileall aurafoods_erp erp frontend shop sales crm scripts
+      - run: python -m pip check
+      - run: python -m pip_audit -r requirements.txt
+      - run: python scripts/build_release_package.py --output outputs/aurafoods_unified_release.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aurafoods-unified-release
+          path: outputs/

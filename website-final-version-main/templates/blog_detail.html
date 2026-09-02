@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block og_type %}article{% endblock %}
+{% block content %}
+<article class="blog-detail" itemscope itemtype="https://schema.org/BlogPosting">
+    <meta itemprop="datePublished" content="{{ post.date }}">
+    <meta itemprop="dateModified" content="{{ post.date }}">
+    <link itemprop="url" href="{{ request.build_absolute_uri }}">
+    <meta itemprop="author" content="{% if post.author %}{{ post.author }}{% else %}Aura Foods{% endif %}">
+    <div itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+        <meta itemprop="name" content="Aura Foods">
+        <meta itemprop="url" content="https://aurafoods.pk">
+    </div>
+    <div class="blog-card-meta">
+        <span class="blog-card-cat" itemprop="articleSection">{{ post.category }}</span>
+        <span itemprop="timeRequired">{{ post.read_time }} read</span>
+        <span itemprop="datePublished">{{ post.date }}</span>
+    </div>
+    <h1 itemprop="headline">{{ post.title }}</h1>
+    <div itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+        <meta itemprop="url" content="{{ post.image }}">
+        <meta itemprop="width" content="1200">
+        <meta itemprop="height" content="630">
+    </div>
+    <img src="{{ post.image }}" alt="{{ post.title }} - Aura Foods blog post" style="width:100%;border-radius:1rem;margin-top:1.5rem" loading="lazy" itemprop="thumbnailUrl" width="1200" height="630">
+    <div class="blog-detail-content" itemprop="articleBody">
+        <p>{{ post.excerpt }}</p>
+        <p>Aura Foods is committed to bringing you the finest organic spices from Pakistan. Our journey begins in the fertile fields of Sindh, where farmers have cultivated spices for generations using traditional, sustainable methods.</p>
+        <p>We believe that great food starts with great ingredients. That's why every spice we offer is carefully selected, hand-sorted, and stone-ground to preserve its natural essence.</p>
+        <h2>Why Quality Matters</h2>
+        <p>When you choose Aura Foods, you choose purity. No preservatives. No artificial colors. Just the authentic taste of Pakistan's finest spices, delivered fresh to your doorstep.</p>
+        <ul>
+            <li>Direct farm partnerships ensure traceability</li>
+            <li>Triple-stage cleaning removes all impurities</li>
+            <li>Cold stone-grinding preserves natural oils</li>
+            <li>Hygienic packaging locks in freshness</li>
+        </ul>
+        <p>Ready to experience the difference? <a href="/shop" style="color:var(--gold);font-weight:600">Browse our collection</a> and bring the taste of Sindh to your kitchen.</p>
+    </div>
+
+    {% if other_posts %}
+    <hr style="margin:3rem 0;border:none;border-top:1px solid var(--border)">
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:1.5rem">More Articles</h2>
+    <div class="blog-grid" itemscope itemtype="https://schema.org/ItemList">
+        {% for p in other_posts %}
+        <a href="/blog/{{ p.slug }}" class="blog-card" itemprop="itemListElement">
+            <div class="blog-card-img"><img src="{{ p.image }}" alt="{{ p.title }} - Aura Foods blog" style="width:100%;height:100%;object-fit:cover" loading="lazy" width="400" height="250"></div>
+            <div class="blog-card-meta"><span class="blog-card-cat">{{ p.category }}</span><span>{{ p.read_time }} read</span></div>
+            <h3 class="blog-card-title">{{ p.title }}</h3>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</article>
+{% endblock %}

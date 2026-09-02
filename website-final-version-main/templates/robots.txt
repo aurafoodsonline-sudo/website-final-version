@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /order-confirmation/
+Disallow: /django-admin/
+
+Sitemap: https://aurafoods.pk/sitemap.xml

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="cart-page">
+    <h1>Shopping Cart</h1>
+
+    <div id="emptyCart" class="empty-cart" style="display:none">
+        <div class="empty-cart-icon">🛒</div>
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added any spices yet.</p>
+        <a href="/shop" class="btn-primary">Browse Spices</a>
+    </div>
+
+    <div class="cart-items" id="cartItems" style="display:none"></div>
+
+    <div class="cart-summary" id="cartSummary" style="display:none">
+        <div class="cart-summary-row"><span>Subtotal</span><span id="cartSubtotal">Rs.0</span></div>
+        <div class="cart-summary-row"><span>Delivery</span><span id="cartDelivery">Rs.150</span></div>
+        <div class="cart-summary-row cart-summary-total"><span>Total</span><span id="cartTotal">Rs.0</span></div>
+        <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:.75rem" id="freeDeliveryNote">Free delivery on orders above Rs.500</p>
+        <a href="/checkout" class="btn-checkout" id="checkoutBtn">Proceed to Checkout</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="checkout-page" itemscope itemtype="https://schema.org/CheckoutPage">
+    <div class="breadcrumbs">
+        <a href="/">Home</a><span>/</span><a href="/cart">Cart</a><span>/</span><span class="current">Checkout</span>
+    </div>
+    <h1 itemprop="name">Checkout</h1>
+
+    {% if error %}
+    <div class="alert-error" style="max-width:640px;margin:2rem auto;padding:1rem 1.5rem;background:#f8d7da;color:#721c24;border-radius:.75rem;text-align:center;font-weight:500">{{ error }}</div>
+    {% endif %}
+    <form class="checkout-form" id="checkoutForm" method="post" action="/checkout">
+        {% csrf_token %}
+        <input type="hidden" name="cart_data" id="cartData" value="">
+        <input type="hidden" name="idempotency_key" id="idempotencyKey" value="">
+        {% with saved=saved_addresses.0 %}
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name" value="{{ saved.full_name|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required placeholder="03XX-XXXXXXX" value="{{ saved.phone|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" value="{% if user.is_authenticated and not user.is_staff %}{{ user.email }}{% endif %}">
+        </div>
+        <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" required placeholder="e.g. Karachi" value="{{ saved.city|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="address">Delivery Address</label>
+            <textarea id="address" name="address" rows="3" required placeholder="Street, house number, landmark" style="padding:.75rem 1rem;border-radius:.75rem;border:1px solid var(--border);font-family:inherit;font-size:.9375rem;resize:vertical">{{ saved.address|default:'' }}</textarea>
+        </div>
+        {% endwith %}
+        {% if user.is_authenticated and not user.is_staff %}
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.875rem;color:var(--muted)">
+            <input type="checkbox" name="save_address" value="1">
+            Save this as my default delivery address
+        </label>
+        {% endif %}
+        <div class="form-group">
+            <label>Payment Method</label>
+            <div class="payment-options">
+                <label class="payment-option active">
+                    <input type="radio" name="payment" value="cod" checked>
+                    <div><strong>Cash on Delivery</strong><br><span style="font-size:.8125rem;color:var(--muted)">Pay when you receive</span></div>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="jazzcash">
+                    <div><strong>JazzCash</strong><br><span style="font-size:.8125rem;color:var(--muted)">Manual verification required</span></div>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="easypaisa">
+                    <div><strong>Easypaisa</strong><br><span style="font-size:.8125rem;color:var(--muted)">Manual verification required</span></div>
+                </label>
+            </div>
+        </div>
+        {% if checkout_policy_links %}
+        <div style="font-size:.8125rem;color:var(--muted);line-height:1.6;margin-top:.5rem">
+            By placing an order you agree to:
+            {% for policy in checkout_policy_links %}
+                <a href="{{ policy.url }}" target="_blank" rel="noopener">{{ policy.title }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}.
+        </div>
+        {% endif %}
+        <button type="submit" class="btn-checkout" style="margin-top:.5rem">Place Order</button>
+    </form>
+</div>
+{% endblock %}

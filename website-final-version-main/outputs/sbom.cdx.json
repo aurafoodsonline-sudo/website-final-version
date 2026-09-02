@@ -1,0 +1,555 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-08-10T17:44:25.320801+00:00",
+    "tools": [
+      {
+        "vendor": "Aura Foods",
+        "name": "generate_sbom.py",
+        "version": "1"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "aurafoods-unified",
+      "version": "6.7-unified"
+    },
+    "properties": [
+      {
+        "name": "python.version",
+        "value": "3.13.15"
+      },
+      {
+        "name": "project.apps",
+        "value": "erp,frontend,shop,sales,crm"
+      },
+      {
+        "name": "static.asset.count",
+        "value": "61"
+      },
+      {
+        "name": "requirements.sha256",
+        "value": "12e5c1b0ac7e2a14df0b458b9fd9b7c44c329327958baf340abfef331aa5e129"
+      },
+      {
+        "name": "requirements.direct.count",
+        "value": "12"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "asgiref",
+      "version": "3.12.1",
+      "bom-ref": "pkg:pypi/asgiref@3.12.1",
+      "purl": "pkg:pypi/asgiref@3.12.1",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "boto3",
+      "version": "1.43.67",
+      "bom-ref": "pkg:pypi/boto3@1.43.67",
+      "purl": "pkg:pypi/boto3@1.43.67",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "botocore",
+      "version": "1.43.67",
+      "bom-ref": "pkg:pypi/botocore@1.43.67",
+      "purl": "pkg:pypi/botocore@1.43.67",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "cffi",
+      "version": "2.1.1",
+      "bom-ref": "pkg:pypi/cffi@2.1.1",
+      "purl": "pkg:pypi/cffi@2.1.1",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "cryptography",
+      "version": "48.0.1",
+      "bom-ref": "pkg:pypi/cryptography@48.0.1",
+      "purl": "pkg:pypi/cryptography@48.0.1",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "dj-database-url",
+      "version": "2.3.0",
+      "bom-ref": "pkg:pypi/dj-database-url@2.3.0",
+      "purl": "pkg:pypi/dj-database-url@2.3.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "Django",
+      "version": "5.2.17",
+      "bom-ref": "pkg:pypi/django@5.2.17",
+      "purl": "pkg:pypi/django@5.2.17",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "django-cors-headers",
+      "version": "4.9.0",
+      "bom-ref": "pkg:pypi/django-cors-headers@4.9.0",
+      "purl": "pkg:pypi/django-cors-headers@4.9.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "django-storages",
+      "version": "1.14.6",
+      "bom-ref": "pkg:pypi/django-storages@1.14.6",
+      "purl": "pkg:pypi/django-storages@1.14.6",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "djangorestframework",
+      "version": "3.18.0",
+      "bom-ref": "pkg:pypi/djangorestframework@3.18.0",
+      "purl": "pkg:pypi/djangorestframework@3.18.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "gunicorn",
+      "version": "23.0.0",
+      "bom-ref": "pkg:pypi/gunicorn@23.0.0",
+      "purl": "pkg:pypi/gunicorn@23.0.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "jmespath",
+      "version": "1.1.0",
+      "bom-ref": "pkg:pypi/jmespath@1.1.0",
+      "purl": "pkg:pypi/jmespath@1.1.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "packaging",
+      "version": "26.3",
+      "bom-ref": "pkg:pypi/packaging@26.3",
+      "purl": "pkg:pypi/packaging@26.3",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "pillow",
+      "version": "12.3.0",
+      "bom-ref": "pkg:pypi/pillow@12.3.0",
+      "purl": "pkg:pypi/pillow@12.3.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "psycopg",
+      "version": "3.3.4",
+      "bom-ref": "pkg:pypi/psycopg@3.3.4",
+      "purl": "pkg:pypi/psycopg@3.3.4",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "psycopg-binary",
+      "version": "3.3.4",
+      "bom-ref": "pkg:pypi/psycopg-binary@3.3.4",
+      "purl": "pkg:pypi/psycopg-binary@3.3.4",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "pycparser",
+      "version": "3.0",
+      "bom-ref": "pkg:pypi/pycparser@3.0",
+      "purl": "pkg:pypi/pycparser@3.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "python-dateutil",
+      "version": "2.9.0.post0",
+      "bom-ref": "pkg:pypi/python-dateutil@2.9.0.post0",
+      "purl": "pkg:pypi/python-dateutil@2.9.0.post0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "python-multipart",
+      "version": "0.0.32",
+      "bom-ref": "pkg:pypi/python-multipart@0.0.32",
+      "purl": "pkg:pypi/python-multipart@0.0.32",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "s3transfer",
+      "version": "0.19.2",
+      "bom-ref": "pkg:pypi/s3transfer@0.19.2",
+      "purl": "pkg:pypi/s3transfer@0.19.2",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "six",
+      "version": "1.17.0",
+      "bom-ref": "pkg:pypi/six@1.17.0",
+      "purl": "pkg:pypi/six@1.17.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "sqlparse",
+      "version": "0.5.5",
+      "bom-ref": "pkg:pypi/sqlparse@0.5.5",
+      "purl": "pkg:pypi/sqlparse@0.5.5",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "bom-ref": "pkg:pypi/typing-extensions@4.16.0",
+      "purl": "pkg:pypi/typing-extensions@4.16.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "tzdata",
+      "version": "2026.3",
+      "bom-ref": "pkg:pypi/tzdata@2026.3",
+      "purl": "pkg:pypi/tzdata@2026.3",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "urllib3",
+      "version": "2.7.0",
+      "bom-ref": "pkg:pypi/urllib3@2.7.0",
+      "purl": "pkg:pypi/urllib3@2.7.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "whitenoise",
+      "version": "6.12.0",
+      "bom-ref": "pkg:pypi/whitenoise@6.12.0",
+      "purl": "pkg:pypi/whitenoise@6.12.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "aurafoods.direct-requirement",
+          "value": "true"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:pypi/asgiref@3.12.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/boto3@1.43.67",
+      "dependsOn": [
+        "pkg:pypi/botocore@1.43.67",
+        "pkg:pypi/jmespath@1.1.0",
+        "pkg:pypi/s3transfer@0.19.2"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/botocore@1.43.67",
+      "dependsOn": [
+        "pkg:pypi/jmespath@1.1.0",
+        "pkg:pypi/python-dateutil@2.9.0.post0",
+        "pkg:pypi/urllib3@2.7.0"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/cffi@2.1.1",
+      "dependsOn": [
+        "pkg:pypi/pycparser@3.0"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/cryptography@48.0.1",
+      "dependsOn": [
+        "pkg:pypi/cffi@2.1.1"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/dj-database-url@2.3.0",
+      "dependsOn": [
+        "pkg:pypi/django@5.2.17",
+        "pkg:pypi/typing-extensions@4.16.0"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/django@5.2.17",
+      "dependsOn": [
+        "pkg:pypi/asgiref@3.12.1",
+        "pkg:pypi/sqlparse@0.5.5",
+        "pkg:pypi/tzdata@2026.3"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/django-cors-headers@4.9.0",
+      "dependsOn": [
+        "pkg:pypi/asgiref@3.12.1",
+        "pkg:pypi/django@5.2.17"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/django-storages@1.14.6",
+      "dependsOn": [
+        "pkg:pypi/django@5.2.17"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/djangorestframework@3.18.0",
+      "dependsOn": [
+        "pkg:pypi/django@5.2.17"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/gunicorn@23.0.0",
+      "dependsOn": [
+        "pkg:pypi/packaging@26.3"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/jmespath@1.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/packaging@26.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/pillow@12.3.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/psycopg@3.3.4",
+      "dependsOn": [
+        "pkg:pypi/psycopg-binary@3.3.4",
+        "pkg:pypi/tzdata@2026.3"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/psycopg-binary@3.3.4",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/pycparser@3.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/python-dateutil@2.9.0.post0",
+      "dependsOn": [
+        "pkg:pypi/six@1.17.0"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/python-multipart@0.0.32",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/s3transfer@0.19.2",
+      "dependsOn": [
+        "pkg:pypi/botocore@1.43.67"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/six@1.17.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/sqlparse@0.5.5",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/typing-extensions@4.16.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/tzdata@2026.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/urllib3@2.7.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/whitenoise@6.12.0",
+      "dependsOn": []
+    }
+  ],
+  "properties": [
+    {
+      "name": "aurafoods.static.assets",
+      "value": "[\"static/css/accessibility.css\", \"static/css/critical.css\", \"static/css/operations.css\", \"static/css/style.css\", \"static/images/bbq.jpg\", \"static/images/biryani.jpg\", \"static/images/chaat.jpg\", \"static/images/chili.jpg\", \"static/images/coriander-powder.jpg\", \"static/images/coriander.jpg\", \"static/images/favicon.png\", \"static/images/garam-masala.jpg\", \"static/images/garam.jpg\", \"static/images/hero-spices.jpg\", \"static/images/karahi.jpg\", \"static/images/logo.png\", \"static/images/placeholder.jpg\", \"static/images/premium-blends.jpg\", \"static/images/quality-story.jpg\", \"static/images/red-chili-powder.jpg\", \"static/images/salt-range.jpg\", \"static/images/turmeric-powder.jpg\", \"static/images/turmeric.jpg\", \"static/js/admin.js\", \"static/js/main.js\", \"static/js/operations.js\", \"static/uploads/bundle_10.jpeg\", \"static/uploads/bundle_11.jpeg\", \"static/uploads/bundle_13.jpeg\", \"static/uploads/bundle_14.jpeg\", \"static/uploads/bundle_15.jpeg\", \"static/uploads/bundle_7.jfif\", \"static/uploads/bundle_7.jpeg\", \"static/uploads/bundle_8.jpeg\", \"static/uploads/bundle_9.jpeg\", \"static/uploads/category_1.jpeg\", \"static/uploads/category_2.jpeg\", \"static/uploads/category_3.png\", \"static/uploads/category_6.png\", \"static/uploads/hero.jpeg\", \"static/uploads/logo.png\", \"static/uploads/product01.jpeg\", \"static/uploads/product02.jpeg\", \"static/uploads/product03.jpeg\", \"static/uploads/product04.jpeg\", \"static/uploads/product05.jpeg\", \"static/uploads/product06.jpeg\", \"static/uploads/product07.jpeg\", \"static/uploads/product08.jpeg\", \"static/uploads/product09.jpeg\", \"static/uploads/product_10.jpeg\", \"static/uploads/product_11.jpeg\", \"static/uploads/product_12.jpeg\", \"static/uploads/product_13.jpg\", \"static/uploads/product_14.jpeg\", \"static/uploads/product_15.jpeg\", \"static/uploads/product_16.jpeg\", \"static/uploads/product_17.jpeg\", \"static/uploads/product_18.jpeg\", \"static/uploads/story-en.jpg\", \"static/uploads/story-ur.jpg\"]"
+    }
+  ]
+}

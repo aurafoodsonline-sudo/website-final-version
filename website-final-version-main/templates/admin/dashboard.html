@@ -1,0 +1,642 @@
+{% load shop_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Admin Dashboard | Aura Foods</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--ink:#0a0a0a;--gold:#c9a84c;--cream:#faf7f2;--green:#4a6741;--red:#c0392b;--muted:#999}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Inter,sans-serif;background:#f0eeeb;color:var(--ink);font-size:14px;line-height:1.5}
+        /* Sidebar */
+        .admin-wrap{display:flex;min-height:100vh}
+        .sidebar{width:240px;background:var(--ink);color:rgba(250,247,242,0.85);flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+        .sidebar-head{padding:1.25rem 1.25rem .75rem;border-bottom:1px solid rgba(250,247,242,0.08)}
+        .sidebar-head h2{font-family:'Playfair Display',serif;color:var(--gold);font-size:1rem;letter-spacing:-.01em}
+        .sidebar-head small{font-size:.65rem;opacity:.5;display:block;margin-top:2px}
+        .sidebar-nav{padding:.5rem 0;flex:1}
+        .sidebar-nav a{display:flex;align-items:center;gap:.625rem;min-height:44px;padding:.55rem 1.25rem;color:rgba(250,247,242,0.7);text-decoration:none;font-size:.875rem;transition:all .15s;border-left:3px solid transparent}
+        .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(201,168,76,0.08);color:var(--gold);border-left-color:var(--gold)}
+        .sidebar-nav a .ico{width:18px;text-align:center;font-size:1rem}
+        .sidebar-foot{padding:.75rem 1.25rem;border-top:1px solid rgba(250,247,242,0.08)}
+        .sidebar-foot a{color:rgba(192,57,43,0.7);font-size:.75rem;text-decoration:none}
+        .sidebar-foot a:hover{color:var(--red)}
+        /* Main */
+        .main{flex:1;min-width:0;padding:1.5rem 2rem;max-width:calc(100vw - 240px)}
+        .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid rgba(10,10,10,0.06)}
+        .topbar h1{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700}
+        .topbar-actions{display:flex;gap:.5rem}
+        .btn-site{display:inline-flex;align-items:center;min-height:44px;gap:.4rem;padding:.45rem 1rem;border-radius:8px;font-size:.8125rem;font-weight:600;text-decoration:none;background:var(--ink);color:#fff;transition:all .15s}
+        .btn-site:hover{opacity:.85}
+        .btn-logout{display:inline-flex;align-items:center;min-height:44px;gap:.4rem;padding:.45rem 1rem;border-radius:8px;font-size:.8125rem;font-weight:600;text-decoration:none;background:rgba(192,57,43,0.08);color:var(--red);transition:all .15s}
+        .btn-logout:hover{background:rgba(192,57,43,0.15)}
+        /* Stats bar */
+        .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem;margin-bottom:1.5rem}
+        .stat-card{background:#fff;border-radius:8px;padding:1rem;border:1px solid rgba(10,10,10,0.05);text-align:center}
+        .stat-card .num{font-size:1.5rem;font-weight:700;font-family:'Playfair Display',serif}
+        .stat-card .label{font-size:.6875rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+        /* Card */
+        .card{background:#fff;border-radius:8px;padding:1.25rem;margin-bottom:1.5rem;border:1px solid rgba(10,10,10,0.05)}
+        .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(10,10,10,0.05)}
+        .card-header h3{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink)}
+        .card-header .count{font-size:.75rem;color:var(--muted);background:rgba(10,10,10,0.04);padding:.15rem .55rem;border-radius:999px}
+        /* Table */
+        .table-wrap{overflow-x:auto}
+        table{width:100%;border-collapse:collapse;font-size:.8125rem}
+        th{text-align:left;padding:.6rem .5rem;color:var(--muted);font-weight:600;text-transform:uppercase;font-size:.75rem;letter-spacing:0;border-bottom:2px solid rgba(10,10,10,0.05);white-space:nowrap}
+        td{padding:.55rem .5rem;border-bottom:1px solid rgba(10,10,10,0.04);vertical-align:middle}
+        tr:hover td{background:rgba(201,168,76,0.02)}
+        .td-img{width:44px;height:44px;border-radius:6px;object-fit:cover;background:#f5f3ef;display:block}
+        .badge{display:inline-block;padding:.2rem .5rem;border-radius:4px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0}
+        .badge-gold{background:var(--gold);color:var(--ink)}
+        .badge-green{background:var(--green);color:#fff}
+        .badge-red{background:var(--red);color:#fff}
+        /* Action buttons */
+        .actions{display:flex;gap:3px;flex-wrap:nowrap}
+        .a-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;gap:4px;padding:.45rem .7rem;border-radius:5px;font-size:.8125rem;font-weight:600;border:none;cursor:pointer;text-decoration:none;transition:all .12s;white-space:nowrap;background:transparent;font-family:inherit}
+        .a-btn:hover{transform:translateY(-1px)}
+        .a-btn-edit{color:var(--gold);background:rgba(201,168,76,0.08)}.a-btn-edit:hover{background:rgba(201,168,76,0.18)}
+        .a-btn-del{color:var(--red);background:rgba(192,57,43,0.06)}.a-btn-del:hover{background:rgba(192,57,43,0.15)}
+        .a-btn-img{color:var(--green);background:rgba(74,103,65,0.08)}.a-btn-img:hover{background:rgba(74,103,65,0.18)}
+        /* Forms */
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+        .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+        .form-full{grid-column:1/-1}
+        .form-group{margin-bottom:.25rem}
+        .form-group label{display:block;font-size:.6875rem;font-weight:600;color:var(--muted);margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.03em}
+        .form-group input,.form-group select,.form-group textarea{width:100%;min-height:44px;padding:.55rem .7rem;border:1px solid rgba(10,10,10,0.1);border-radius:6px;font-size:.875rem;font-family:inherit;background:#fafafa;transition:border .15s}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--gold);background:#fff}
+        .form-group textarea{resize:vertical;min-height:56px}
+        .form-group .inline-check{display:flex;align-items:center;gap:.5rem;margin-top:.5rem}
+        .form-group .inline-check label{display:inline;text-transform:none;color:var(--ink);font-weight:500}
+        .form-group .inline-check input{width:auto}
+        .btn-primary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;gap:.4rem;padding:.55rem 1.25rem;border-radius:8px;font-size:.875rem;font-weight:600;border:none;cursor:pointer;transition:all .15s;font-family:inherit}
+        .btn-primary{background:var(--ink);color:#fff}.btn-primary:hover{opacity:.85}
+        .btn-gold{background:var(--gold);color:var(--ink)}.btn-gold:hover{opacity:.9}
+        .btn-sm{padding:.45rem .75rem;font-size:.8125rem;border-radius:6px}
+        /* Modal */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;backdrop-filter:blur(4px);justify-content:center;align-items:flex-start;padding:2rem;overflow-y:auto}
+        .modal-overlay.active{display:flex}
+        .modal{background:#fff;border-radius:8px;width:100%;max-width:700px;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,0.2);margin:auto;animation:modalIn .2s ease}
+        .modal-sm{max-width:480px}
+        @keyframes modalIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1px solid rgba(10,10,10,0.06)}
+        .modal-head h2{font-size:1.1rem;font-weight:700}
+        .modal-close{width:44px;height:44px;border-radius:6px;border:none;background:rgba(10,10,10,0.04);cursor:pointer;font-size:1.25rem;display:grid;place-items:center;transition:all .15s}
+        .modal-close:hover{background:rgba(10,10,10,0.1)}
+        .modal-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid rgba(10,10,10,0.06)}
+        /* Tabs */
+        .section{display:none}
+        .section.active{display:block}
+        /* File upload */
+        .file-drop{border:2px dashed rgba(10,10,10,0.1);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .15s}
+        .file-drop:hover{border-color:var(--gold);background:rgba(201,168,76,0.03)}
+        .file-drop input{display:none}
+        .file-drop .hint{font-size:.75rem;color:var(--muted);margin-top:.25rem}
+        /* Responsive */
+        @media(max-width:768px){.sidebar{width:60px}.sidebar-head h2{font-size:.7rem}.sidebar-head small,.sidebar-nav a span{display:none}.sidebar-nav a{padding:.55rem;justify-content:center}.main{padding:1rem;max-width:100vw}.form-grid,.form-grid-3{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+        /* Scrollbar */
+        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(10,10,10,0.1);border-radius:999px}
+        .empty-state{text-align:center;padding:2rem;color:var(--muted);font-size:.875rem}
+        hr{margin:1rem 0;border:none;border-top:1px solid rgba(10,10,10,0.05)}
+        .tag{display:inline-block;padding:.2rem .5rem;border-radius:4px;font-size:.625rem;font-weight:600;background:rgba(10,10,10,0.04)}
+        .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:#fff;padding:.75rem 1.25rem;border-radius:10px;font-size:.8125rem;box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}.toast.show{opacity:1;transform:translateY(0)}
+        .img-preview{width:44px;height:44px;border-radius:6px;object-fit:cover;background:#f5f3ef}
+        .img-preview-lg{width:100px;height:100px;border-radius:8px;object-fit:cover;background:#f5f3ef;border:1px solid rgba(10,10,10,0.06)}
+    </style>
+</head>
+<body>
+<div class="admin-wrap">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-head">
+            <img src="/static/uploads/logo.png?v=3" alt="Aura Foods logo" style="width:64px;height:64px;border-radius:50%;object-fit:cover;display:block;margin:0 auto .35rem">
+            <h2>Aura Foods</h2>
+            <small>Content Management</small>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="active" data-section="dashboard"><span class="ico">DB</span><span>Dashboard</span></a>
+            {% if can_catalog %}<a href="#" data-section="products"><span class="ico">PR</span><span>Products</span></a>
+            <a href="#" data-section="categories"><span class="ico">CA</span><span>Categories</span></a>
+            <a href="#" data-section="testimonials"><span class="ico">TE</span><span>Testimonials</span></a>
+            <a href="#" data-section="bundles"><span class="ico">BU</span><span>Bundles</span></a>
+            <a href="#" data-section="blog"><span class="ico">BL</span><span>Blog Posts</span></a>
+            <a href="#" data-section="why"><span class="ico">WH</span><span>Why Items</span></a>
+            <a href="#" data-section="settings"><span class="ico">ST</span><span>Settings</span></a>
+            <a href="#" data-section="images"><span class="ico">ME</span><span>Media</span></a>{% endif %}
+            {% if can_sales %}<a href="#" data-section="orders"><span class="ico">OR</span><span>Orders</span></a>{% endif %}
+            {% if can_crm %}<a href="#" data-section="messages"><span class="ico">MS</span><span>Messages</span></a>{% endif %}
+        </nav>
+        <div class="sidebar-foot"><a href="/admin/logout">Logout</a></div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="topbar">
+            <h1>Dashboard</h1>
+            <div class="topbar-actions">
+                <a href="/" target="_blank" rel="noopener" class="btn-site">View Site</a>
+                <a href="/admin/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            {% if can_catalog %}<div class="stat-card"><div class="num">{{ products|length }}</div><div class="label">Products</div></div>
+            <div class="stat-card"><div class="num">{{ categories|length }}</div><div class="label">Categories</div></div>
+            <div class="stat-card"><div class="num">{{ testimonials|length }}</div><div class="label">Testimonials</div></div>
+            <div class="stat-card"><div class="num">{{ bundles|length }}</div><div class="label">Bundles</div></div>
+            <div class="stat-card"><div class="num">{{ blog_posts|length }}</div><div class="label">Blog Posts</div></div>{% endif %}
+            {% if can_crm %}<div class="stat-card"><div class="num">{{ messages|length }}</div><div class="label">Messages</div></div>{% endif %}
+            {% if can_sales %}<div class="stat-card"><div class="num">{{ orders|length }}</div><div class="label">Orders</div></div>{% endif %}
+        </div>
+
+        <!-- ===================== SECTION: DASHBOARD ===================== -->
+        <div id="sec-dashboard" class="section active">
+            <div class="card">
+                <div class="card-header"><h3>Quick Actions</h3></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem">
+                    {% if can_catalog %}<button class="btn-primary" data-switch-section="products">Add Product</button>
+                    <button class="btn-primary btn-gold" data-switch-section="blog">New Blog Post</button>
+                    <button class="btn-primary" data-switch-section="images">Upload Image</button>
+                    <button class="btn-primary" data-switch-section="settings">Edit Settings</button>{% endif %}
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3>Recent Products</h3></div>
+                {% if products %}
+                <div class="table-wrap"><table>
+                    <thead><tr><th>Product</th><th>Price</th><th>Category</th><th>Status</th></tr></thead>
+                    <tbody>{% for p in recent_products %}<tr>
+                        <td><div style="display:flex;align-items:center;gap:.5rem"><img src="{{ p.image|default:'' }}" class="img-preview" alt=""><strong>{{ p.name }}</strong></div></td>
+                        <td>Rs.{{ p.price }}</td><td>{{ p.category_name|default:'-' }}</td>
+                        <td>{% if p.best_seller %}<span class="badge badge-gold">Bestseller</span>{% endif %}{% if p.new_arrival %}<span class="badge badge-green">New</span>{% endif %}</td>
+                    </tr>{% endfor %}</tbody></table></div>
+                {% else %}<div class="empty-state">No products yet. <a href="#" data-switch-section="products">Add your first product</a></div>{% endif %}
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: PRODUCTS ===================== -->
+        <div id="sec-products" class="section">
+            <div class="card">
+                <div class="card-header"><h3>All Products</h3><span class="count">{{ products|length }} total</span></div>
+                <div class="table-wrap"><table>
+                    <thead><tr><th></th><th>Name</th><th>Price</th><th>Weight</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    {% for p in products %}
+                    <tr>
+                        <td><img src="{{ p.image|default:'/static/images/hero-spices.jpg' }}" class="td-img" alt=""></td>
+                        <td><strong>{{ p.name }}</strong><br><span style="font-size:.6875rem;color:var(--muted)">{{ p.tagline }}</span></td>
+                        <td>Rs.{{ p.price }}{% if p.old_price and p.old_price > p.price %}<br><span style="font-size:.6875rem;color:var(--muted);text-decoration:line-through">Rs.{{ p.old_price }}</span>{% endif %}</td>
+                        <td>{{ p.weight }}</td>
+                        <td>{{ p.category_name|default:'-' }}</td>
+                        <td>{% if p.active %}<span class="badge badge-green">Active</span>{% else %}<span class="badge badge-red">Inactive</span>{% endif %} {% if p.best_seller %}<span class="badge badge-gold">Bestseller</span>{% endif %}{% if p.new_arrival %}<span class="badge badge-green">New</span>{% endif %}{% if p.featured %}<span class="badge badge-gold">Featured</span>{% endif %}</td>
+                        <td>
+                            <div class="actions">
+                                <button class="a-btn a-btn-edit" data-edit-product="{{ p.id }}">Edit</button>
+                                <button class="a-btn a-btn-img" data-upload-product-image="{{ p.id }}">Image</button>
+                                <form class="inline-form js-confirm" method="post" action="/admin/product/delete/{{ p.id }}/" data-confirm="Delete {{ p.name }}?">{% csrf_token %}<button class="a-btn a-btn-del" aria-label="Delete {{ p.name }}">Delete</button></form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody></table>
+                </div>
+                <hr>
+                <div class="card-header"><h3>Add New Product</h3></div>
+                <form method="post" action="/admin/product/add/" enctype="multipart/form-data">{% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group"><label>Product Name *</label><input name="name" required></div>
+                        <div class="form-group"><label>Tagline</label><input name="tagline"></div>
+                        <div class="form-group"><label>Price (Rs.) *</label><input name="price" type="number" step="1" required></div>
+                        <div class="form-group"><label>Old Price (Rs.)</label><input name="old_price" type="number" step="1" value="0"></div>
+                        <div class="form-group"><label>Image</label><input type="file" name="file" accept="image/*" style="padding:.3rem 0;border:none;font-size:.8125rem;font-family:inherit"></div>
+                        <div class="form-group"><label>Weight</label><input name="weight" value="200g"></div>
+                        <div class="form-group form-full">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+                                <label style="font-size:.6875rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:var(--muted)">Grammage Options</label>
+                                <button type="button" class="btn-primary btn-sm" data-action="add-grammage-row" data-target="np_grammage">+ Add Grammage Option</button>
+                            </div>
+                            <div id="np_grammage"></div>
+                        </div>
+                        <div class="form-group"><label>Category</label>
+                            <select name="category_id">{% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+                        <div class="form-group form-full"><label>Description</label><textarea name="description" rows="2"></textarea></div>
+                        <div class="form-group"><label>Ingredients</label><textarea name="ingredients" rows="1"></textarea></div>
+                        <div class="form-group"><label>Usage</label><textarea name="usage" rows="1"></textarea></div>
+                    </div>
+                    <div style="display:flex;gap:1rem;margin-top:.5rem">
+                        <label style="display:flex;align-items:center;gap:.35rem;font-size:.8125rem;cursor:pointer"><input name="best_seller" type="checkbox" value="1"> Best Seller</label>
+                        <label style="display:flex;align-items:center;gap:.35rem;font-size:.8125rem;cursor:pointer"><input name="new_arrival" type="checkbox" value="1"> New Arrival</label>
+                        <label style="display:flex;align-items:center;gap:.35rem;font-size:.8125rem;cursor:pointer"><input type="hidden" name="active" value="0"><input name="active" type="checkbox" value="1" checked> Active</label>
+                        <label style="display:flex;align-items:center;gap:.35rem;font-size:.8125rem;cursor:pointer"><input type="hidden" name="featured" value="0"><input name="featured" type="checkbox" value="1"> Featured</label>
+                    </div>
+                    <button class="btn-primary" style="margin-top:.75rem">Add Product</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: CATEGORIES ===================== -->
+        <div id="sec-categories" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Categories</h3><span class="count">{{ categories|length }} total</span></div>
+                <div class="table-wrap"><table>
+                    <thead><tr><th>Name</th><th>Products</th><th>Actions</th></tr></thead>
+                    <tbody>{% for c in categories %}<tr>
+                        <td><strong>{{ c.name }}</strong></td><td>{{ category_products|get_item:c.id|length|default:0 }}</td>
+                        <td><div class="actions">
+                            <button class="a-btn a-btn-edit" data-edit-category="{{ c.id }}" data-name="{{ c.name }}">Edit</button>
+                            <button class="a-btn a-btn-img" data-upload-category-image="{{ c.id }}">Image</button>
+                            <button class="a-btn" style="color:var(--green);background:rgba(74,103,65,0.08)" data-manage-category-products="{{ c.id }}">Products</button>
+                            <form class="inline-form js-confirm" method="post" action="/admin/category/delete/{{ c.id }}/" data-confirm="Delete {{ c.name }}?">{% csrf_token %}<button class="a-btn a-btn-del">Delete</button></form>
+                        </div></td>
+                    </tr>
+                    {% endfor %}</tbody></table>
+                </div>
+                <hr>
+                <div class="card-header"><h3>Add Category</h3></div>
+                <form method="post" action="/admin/category/add/">{% csrf_token %}<div style="display:flex;gap:.5rem;max-width:400px"><input name="name" placeholder="Category name" required style="flex:1;padding:.55rem .7rem;border:1px solid rgba(10,10,10,0.1);border-radius:6px;font-size:.8125rem;font-family:inherit"><button class="btn-primary btn-sm">Add</button></div></form>
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: TESTIMONIALS ===================== -->
+        <div id="sec-testimonials" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Testimonials</h3><span class="count">{{ testimonials|length }} total</span></div>
+                {% if testimonials %}
+                <div class="table-wrap"><table>
+                    <thead><tr><th>Name</th><th>City</th><th>Review</th><th>Actions</th></tr></thead>
+                    <tbody>{% for t in testimonials %}<tr>
+                        <td><strong>{{ t.name }}</strong></td><td>{{ t.city }}</td>
+                        <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.text }}</td>
+                        <td><form class="inline-form js-confirm" method="post" action="/admin/testimonial/delete/{{ t.id }}/" data-confirm="Delete?">{% csrf_token %}<button class="a-btn a-btn-del">Delete</button></form></td>
+                    </tr>{% endfor %}</tbody></table></div>
+                {% else %}<div class="empty-state">No testimonials yet.</div>{% endif %}
+                <hr>
+                <div class="card-header"><h3>Add Testimonial</h3></div>
+                <form method="post" action="/admin/testimonial/add/">{% csrf_token %}
+                    <div class="form-grid"><div class="form-group"><label>Name *</label><input name="name" required></div><div class="form-group"><label>City</label><input name="city"></div></div>
+                    <div class="form-group"><label>Review Text *</label><textarea name="text" rows="2" required></textarea></div>
+                    <button class="btn-primary btn-sm">Add Testimonial</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: BUNDLES ===================== -->
+        <div id="sec-bundles" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Bundles / Combos</h3><span class="count">{{ bundles|length }} total</span></div>
+                {% if bundles %}
+                <div class="table-wrap"><table>
+                    <thead><tr><th></th><th>Name</th><th>Items</th><th>Price</th><th>Old Price</th><th>Save</th><th>Actions</th></tr></thead>
+                    <tbody>{% for b in bundles %}<tr>
+                        <td><img src="{{ b.image|default:'/static/images/placeholder.jpg' }}" class="td-img" alt=""></td>
+                        <td><strong>{{ b.name }}</strong></td><td>{{ b.items|truncatewords:8 }}</td><td>Rs.{{ b.price }}</td><td>Rs.{{ b.old_price }}</td><td>{{ b.save_percent }}%</td>
+                        <td><div class="actions">
+                            <button class="a-btn a-btn-edit" data-edit-bundle="{{ b.id }}">Edit</button>
+                            <button class="a-btn a-btn-img" data-upload-bundle-image="{{ b.id }}">Image</button>
+                            <button class="a-btn" style="color:var(--green);background:rgba(74,103,65,0.08)" data-manage-bundle-products="{{ b.id }}">Products</button>
+                            <form class="inline-form js-confirm" method="post" action="/admin/bundle/delete/{{ b.id }}/" data-confirm="Delete {{ b.name }}?">{% csrf_token %}<button class="a-btn a-btn-del">Delete</button></form>
+                        </div></td>
+                    </tr>{% endfor %}</tbody></table></div>
+                {% else %}<div class="empty-state">No bundles yet.</div>{% endif %}
+                <hr>
+                <div class="card-header"><h3>Add Bundle</h3></div>
+                <form method="post" action="/admin/bundle/add/">{% csrf_token %}
+                    <div class="form-grid-3">
+                        <div class="form-group"><label>Bundle Name *</label><input name="name" required></div>
+                        <div class="form-group"><label>Price (Rs.) *</label><input name="price" type="number" step="1" required></div>
+                        <div class="form-group"><label>Old Price (Rs.)</label><input name="old_price" type="number" step="1"></div>
+                    </div>
+                    <div class="form-group"><label>Items (comma separated)</label><input name="items"></div>
+                    <button class="btn-primary btn-sm">Add Bundle</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: BLOG ===================== -->
+        <div id="sec-blog" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Blog Posts</h3><span class="count">{{ blog_posts|length }} total</span></div>
+                {% if blog_posts %}
+                <div class="table-wrap"><table>
+                    <thead><tr><th></th><th>Title</th><th>Category</th><th>Date</th><th>Actions</th></tr></thead>
+                    <tbody>{% for b in blog_posts %}<tr>
+                        <td><img src="{{ b.image|default:'/static/images/placeholder.jpg' }}" class="td-img" alt=""></td>
+                        <td><strong>{{ b.title }}</strong></td><td><span class="tag">{{ b.category }}</span></td><td>{{ b.date }}</td>
+                        <td><div class="actions">
+                            <button class="a-btn a-btn-img" data-upload-blog-image="{{ b.id }}">Image</button>
+                            <form class="inline-form js-confirm" method="post" action="/admin/blog/delete/{{ b.id }}/" data-confirm="Delete {{ b.title }}?">{% csrf_token %}<button class="a-btn a-btn-del">Delete</button></form>
+                        </div></td>
+                    </tr>{% endfor %}</tbody></table></div>
+                {% else %}<div class="empty-state">No blog posts yet.</div>{% endif %}
+                <hr>
+                <div class="card-header"><h3>New Blog Post</h3></div>
+                <form method="post" action="/admin/blog/add/">{% csrf_token %}
+                    <div class="form-grid-3">
+                        <div class="form-group"><label>Title *</label><input name="title" required></div>
+                        <div class="form-group"><label>Category</label><input name="category" value="General"></div>
+                        <div class="form-group"><label>Read Time</label><input name="read_time" value="5 min"></div>
+                    </div>
+                    <div class="form-group"><label>Excerpt</label><textarea name="excerpt" rows="2"></textarea></div>
+                    <div class="form-group"><label>Content (HTML supported)</label><textarea name="content" rows="5"></textarea></div>
+                    <button class="btn-primary btn-sm">Publish Post</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: WHY ITEMS ===================== -->
+        <div id="sec-why" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Why Aura Foods | Feature Blocks</h3></div>
+                {% if why_items %}
+                <div class="table-wrap"><table>
+                    <thead><tr><th>Icon</th><th>Title</th><th>Description</th><th>Actions</th></tr></thead>
+                    <tbody>{% for w in why_items %}<tr>
+                        <td>Feature</td><td><strong>{{ w.title }}</strong></td><td style="max-width:350px">{{ w.description }}</td>
+                        <td><button class="a-btn a-btn-edit" data-edit-why="{{ w.id }}" data-title="{{ w.title }}" data-description="{{ w.description }}">Edit</button></td>
+                    </tr>{% endfor %}</tbody></table></div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: ORDERS ===================== -->
+        <div id="sec-orders" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Orders</h3><span class="count">{{ orders|length }} total</span></div>
+                {% if orders %}
+                <div class="table-wrap"><table>
+                    <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+                    <tbody>{% for o in orders %}<tr>
+                        <td><strong>{{ o.reference }}</strong></td>
+                        <td>{{ o.customer_name }}<br><span style="font-size:.6875rem;color:var(--muted)">{{ o.phone }}</span></td>
+                        <td>Rs.{{ o.total|floatformat:0 }}</td>
+                        <td><span class="tag">{{ o.payment_method|upper }}</span></td>
+                        <td><span class="badge {% if o.status == 'delivered' %}badge-green{% elif o.status == 'cancelled' %}badge-red{% else %}badge-gold{% endif %}">{{ o.status|title }}</span></td>
+                        <td style="white-space:nowrap">{{ o.created_at|date:"Y-m-d" }}</td>
+                        <td>
+                            <div class="actions">
+                                {% if o.status == 'pending' and can_sales_manage %}<form method="post" action="/admin/order/status/{{ o.id }}/" data-confirm="Confirm this order?" class="js-confirm">{% csrf_token %}<input type="hidden" name="status" value="confirmed"><button class="a-btn a-btn-edit">Confirm</button></form>{% endif %}
+                                {% if o.status == 'confirmed' and can_sales_manage %}<form method="post" action="/admin/order/status/{{ o.id }}/" data-confirm="Start processing this order?" class="js-confirm">{% csrf_token %}<input type="hidden" name="status" value="processing"><button class="a-btn a-btn-edit">Process</button></form>{% endif %}
+                                {% if o.status == 'processing' and can_sales_dispatch %}<form method="post" action="/admin/order/status/{{ o.id }}/" data-confirm="Dispatch this order and post stock movements?" class="js-confirm">{% csrf_token %}<input type="hidden" name="status" value="shipped"><button class="a-btn a-btn-edit">Dispatch</button></form>{% endif %}
+                                {% if o.status == 'shipped' and can_sales_dispatch %}<form method="post" action="/admin/order/status/{{ o.id }}/" data-confirm="Mark this order delivered?" class="js-confirm">{% csrf_token %}<input type="hidden" name="status" value="delivered"><button class="a-btn a-btn-edit">Deliver</button></form>{% endif %}
+                                {% if can_sales_manage and o.status != 'shipped' and o.status != 'delivered' and o.status != 'cancelled' %}<form method="post" action="/admin/order/status/{{ o.id }}/" data-confirm="Cancel this order and release stock?" class="js-confirm">{% csrf_token %}<input type="hidden" name="status" value="cancelled"><button class="a-btn a-btn-del">Cancel</button></form>{% endif %}
+                            </div>
+                        </td>
+                    </tr>{% endfor %}</tbody></table>
+                </div>
+                {% else %}<div class="empty-state">No orders yet.</div>{% endif %}
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: SETTINGS ===================== -->
+        <div id="sec-settings" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Site Settings</h3></div>
+                <form method="post" action="/admin/settings/save/">{% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group"><label>Site Name</label><input name="setting_site_name" value="{{ settings.site_name }}"></div>
+                        <div class="form-group"><label>Tagline</label><input name="setting_site_tagline" value="{{ settings.site_tagline }}"></div>
+                        <div class="form-group form-full"><label>Hero Title (HTML allowed)</label><input name="setting_hero_title" value="{{ settings.hero_title|default:'Pure &amp; Premium <em>Organic Spices</em>' }}"></div>
+                        <div class="form-group form-full"><label>Hero Subtitle</label><textarea name="setting_hero_subtitle" rows="2">{{ settings.hero_subtitle }}</textarea></div>
+                        <div class="form-group"><label>Hero Badge</label><input name="setting_hero_badge" value="{{ settings.hero_badge|default:'Hand-sourced | Stone-ground | Freshly packed' }}"></div>
+                        <div class="form-group"><label>Story Location</label><input name="setting_story_location" value="{{ settings.story_location }}"></div>
+                        <div class="form-group"><label>About Title</label><input name="setting_about_title" value="{{ settings.about_title|default:'from fresh fields to Your Spice Rack' }}"></div>
+                        <div class="form-group form-full"><label>About Content</label><textarea name="setting_about_content" rows="2">{{ settings.about_content }}</textarea></div>
+                        <div class="form-group"><label>Phone</label><input name="setting_phone" value="{{ settings.phone }}"></div>
+                        <div class="form-group"><label>Email</label><input name="setting_email" value="{{ settings.email }}"></div>
+                        <div class="form-group"><label>Address</label><input name="setting_address" value="{{ settings.address }}"></div>
+                        <div class="form-group"><label>WhatsApp Number (without +)</label><input name="setting_whatsapp" value="{{ settings.whatsapp }}"></div>
+                    </div>
+                    <hr>
+                    <div class="card-header"><h3>Delivery Settings</h3></div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Free Delivery Minimum (Rs.)</label><input name="setting_free_delivery_min" type="number" step="1" value="{{ settings.free_delivery_min|default:'500' }}"></div>
+                        <div class="form-group"><label>Delivery Charge (Rs.)</label><input name="setting_delivery_charge" type="number" step="1" value="{{ settings.delivery_charge|default:'150' }}"></div>
+                    </div>
+                    <button class="btn-primary" style="margin-top:1rem">Save All Settings</button>
+                </form>
+
+                <hr>
+                <div class="card-header"><h3>Change Password</h3></div>
+                <form method="post" action="/admin/change-password/" style="max-width:400px">{% csrf_token %}
+                    <div class="form-group"><label>Current Password</label><input name="current" type="password" required></div>
+                    <div class="form-group"><label>New Password</label><input name="newpass" type="password" required></div>
+                    <button class="btn-primary btn-sm" style="margin-top:.25rem">Update Password</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: MESSAGES ===================== -->
+        <div id="sec-messages" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Contact Messages</h3><span class="count">{{ messages|length }} total</span></div>
+                {% if messages %}
+                <div class="table-wrap"><table>
+                    <thead><tr><th>Date</th><th>Name</th><th>Contact</th><th>Message</th><th>Actions</th></tr></thead>
+                    <tbody>{% for m in messages %}<tr>
+                        <td style="white-space:nowrap">{{ m.created_at|date:"Y-m-d" }}</td>
+                        <td><strong>{{ m.name }}</strong></td>
+                        <td><div style="font-size:.75rem">{{ m.email }}{% if m.phone %}<br>{{ m.phone }}{% endif %}</div></td>
+                        <td style="max-width:300px;white-space:normal">{{ m.message }}</td>
+                        <td><div class="actions">
+                            <a class="a-btn" style="color:var(--green);background:rgba(74,103,65,0.08);text-decoration:none" href="mailto:{{ m.email }}?subject=Re: Aura Foods Inquiry&body=Dear {{ m.name }},">Reply</a>
+                            <form class="inline-form js-confirm" method="post" action="/admin/message/delete/{{ m.id }}/" data-confirm="Delete message from {{ m.name }}?">{% csrf_token %}<button class="a-btn a-btn-del">Delete</button></form>
+                        </div></td>
+                    </tr>{% endfor %}</tbody></table>
+                </div>
+                {% else %}<div class="empty-state">No messages yet.</div>{% endif %}
+            </div>
+        </div>
+
+        <!-- ===================== SECTION: IMAGES ===================== -->
+        <div id="sec-images" class="section">
+            <div class="card">
+                <div class="card-header"><h3>Upload Media</h3></div>
+                <div class="form-grid-3">
+                    <div>
+                        <div class="card-header"><h4>Hero Image</h4></div>
+                        <form method="post" action="/admin/hero-image/" enctype="multipart/form-data">{% csrf_token %}
+                            <input type="hidden" name="target" value="hero">
+                            <div class="file-drop" data-file-drop>
+                                <div style="font-weight:700;margin-bottom:.25rem">Hero</div>
+                                <div style="font-size:.8125rem;font-weight:600">Click to upload</div>
+                                <div class="hint">Recommended: 1920x1080</div>
+                                <input type="file" name="file" accept="image/*" class="js-auto-submit">
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <div class="card-header"><h4>Story Image</h4></div>
+                        <form method="post" action="/admin/story-image/" enctype="multipart/form-data">{% csrf_token %}
+                            <input type="hidden" name="target" value="story">
+                            <div class="file-drop" data-file-drop>
+                                <div style="font-weight:700;margin-bottom:.25rem">Story</div>
+                                <div style="font-size:.8125rem;font-weight:600">Click to upload</div>
+                                <div class="hint">Recommended: 800x1000</div>
+                                <input type="file" name="file" accept="image/*" class="js-auto-submit">
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <div class="card-header"><h4>Generic Upload</h4></div>
+                        <form method="post" action="/admin/upload/" enctype="multipart/form-data">{% csrf_token %}
+                            <div class="file-drop" data-file-drop>
+                                <div style="font-weight:700;margin-bottom:.25rem">Media</div>
+                                <div style="font-size:.8125rem;font-weight:600">Click to upload</div>
+                                <div class="hint">Any image file</div>
+                                <input type="file" name="file" accept="image/*" class="js-auto-submit">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /main -->
+</div><!-- /admin-wrap -->
+
+<!-- ===================== MODAL: Edit Product ===================== -->
+<div class="modal-overlay" id="editProductModal">
+    <div class="modal">
+        <div class="modal-head"><h2>Edit Product</h2><button class="modal-close" aria-label="Close" data-close-modal="editProductModal">X</button></div>
+        <form method="post" id="editProductForm" enctype="multipart/form-data">{% csrf_token %}
+            <input type="hidden" name="removed_variant_ids" id="ep_removed_variant_ids" value="">
+            <div class="form-grid">
+                <div class="form-group"><label>Product Name</label><input name="name" id="ep_name" required></div>
+                <div class="form-group"><label>Tagline</label><input name="tagline" id="ep_tagline"></div>
+                <div class="form-group"><label>Price (Rs.)</label><input name="price" type="number" step="1" id="ep_price" required></div>
+                <div class="form-group"><label>Old Price</label><input name="old_price" type="number" step="1" id="ep_old_price" value="0"></div>
+                <div class="form-group"><label>Replace Image</label><input type="file" name="file" accept="image/*" style="padding:.3rem 0;border:none;font-size:.8125rem;font-family:inherit"></div>
+                <div class="form-group"><label>Weight</label><input name="weight" id="ep_weight"></div>
+                <div class="form-group form-full">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+                        <label style="font-size:.6875rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:var(--muted)">Grammage Options</label>
+                        <button type="button" class="btn-primary btn-sm" data-action="add-grammage-row" data-target="ep_grammage">+ Add Grammage Option</button>
+                    </div>
+                    <div id="ep_grammage"></div>
+                </div>
+                <div class="form-group"><label>Category</label><select name="category_id" id="ep_category">{% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+                <div class="form-group form-full"><label>Description</label><textarea name="description" id="ep_desc" rows="2"></textarea></div>
+                <div class="form-group"><label>Ingredients</label><textarea name="ingredients" id="ep_ing" rows="1"></textarea></div>
+                <div class="form-group"><label>Usage</label><textarea name="usage" id="ep_usage" rows="1"></textarea></div>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:.5rem">
+                <label style="display:flex;align-items:center;gap:.35rem;font-size:.8125rem;cursor:pointer"><input type="checkbox" id="ep_bs" name="best_seller" value="1"> Best Seller</label>
+                <label style="display:flex;align-items:center;gap:.35rem;font-size:.8125rem;cursor:pointer"><input type="checkbox" id="ep_na" name="new_arrival" value="1"> New Arrival</label>
+                <label style="display:flex;align-items:center;gap:.35rem;font-size:.8125rem;cursor:pointer"><input type="hidden" name="active" value="0"><input type="checkbox" id="ep_active" name="active" value="1"> Active</label>
+                <label style="display:flex;align-items:center;gap:.35rem;font-size:.8125rem;cursor:pointer"><input type="hidden" name="featured" value="0"><input type="checkbox" id="ep_featured" name="featured" value="1"> Featured</label>
+            </div>
+            <div style="margin-top:1rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+                    <label style="font-size:.6875rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:var(--muted)">Sizes / Variants</label>
+                    <button type="button" class="btn-primary btn-sm" data-action="add-variant-row">+ Add Size</button>
+                </div>
+                <div id="ep_variants"></div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-sm" style="background:rgba(10,10,10,0.06);color:var(--ink)" data-close-modal="editProductModal">Cancel</button>
+                <button type="submit" class="btn-primary btn-sm btn-gold">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===================== MODAL: Edit Category ===================== -->
+<div class="modal-overlay" id="editCatModal">
+    <div class="modal modal-sm">
+        <div class="modal-head"><h2>Edit Category</h2><button class="modal-close" aria-label="Close" data-close-modal="editCatModal">X</button></div>
+        <form method="post" id="editCatForm">{% csrf_token %}
+            <div class="form-group"><label>Category Name</label><input name="name" id="ec_name" required></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-sm" style="background:rgba(10,10,10,0.06);color:var(--ink)" data-close-modal="editCatModal">Cancel</button>
+                <button type="submit" class="btn-primary btn-sm btn-gold">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===================== MODAL: Edit Why Item ===================== -->
+<div class="modal-overlay" id="editWhyModal">
+    <div class="modal modal-sm">
+        <div class="modal-head"><h2>Edit Feature Block</h2><button class="modal-close" aria-label="Close" data-close-modal="editWhyModal">X</button></div>
+        <form method="post" id="editWhyForm">{% csrf_token %}
+            <div class="form-group"><label>Title</label><input name="title" id="ew_title" required></div>
+            <div class="form-group"><label>Description</label><textarea name="description" id="ew_desc" rows="3"></textarea></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-sm" style="background:rgba(10,10,10,0.06);color:var(--ink)" data-close-modal="editWhyModal">Cancel</button>
+                <button type="submit" class="btn-primary btn-sm btn-gold">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===================== MODAL: Manage Category Products (CRUD) ===================== -->
+<div class="modal-overlay" id="manageCatProductsModal">
+    <div class="modal">
+        <div class="modal-head"><h2>Manage Products in <span id="mcp_cat_name"></span></h2><button class="modal-close" aria-label="Close" data-close-modal="manageCatProductsModal">X</button></div>
+        <form method="post" id="manageCatProductsForm" data-async-submit="category-products">{% csrf_token %}
+            <div style="margin-bottom:.75rem;font-size:.8125rem;color:var(--muted)">Check products to include in this category, uncheck to remove.</div>
+            <div id="mcp_product_list" style="display:flex;flex-direction:column;gap:.3rem;max-height:400px;overflow-y:auto;padding:.25rem 0">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-sm" style="background:rgba(10,10,10,0.06);color:var(--ink)" data-close-modal="manageCatProductsModal">Cancel</button>
+                <button type="submit" class="btn-primary btn-sm btn-gold">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===================== MODAL: Edit Bundle ===================== -->
+<div class="modal-overlay" id="editBundleModal">
+    <div class="modal modal-sm">
+        <div class="modal-head"><h2>Edit Bundle</h2><button class="modal-close" aria-label="Close" data-close-modal="editBundleModal">X</button></div>
+        <form method="post" id="editBundleForm" enctype="multipart/form-data">{% csrf_token %}
+            <div class="form-group"><label>Bundle Name</label><input name="name" id="eb_name" required></div>
+            <div class="form-group"><label>Items / Description</label><textarea name="items" id="eb_items" rows="2"></textarea></div>
+            <div class="form-grid-3">
+                <div class="form-group"><label>Price (Rs.)</label><input name="price" type="number" step="1" id="eb_price"></div>
+                <div class="form-group"><label>Old Price (Rs.)</label><input name="old_price" type="number" step="1" id="eb_old_price"></div>
+                <div class="form-group"><label>Replace Image</label><input type="file" name="file" accept="image/*" style="padding:.3rem 0;border:none;font-size:.8125rem;font-family:inherit"></div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-sm" style="background:rgba(10,10,10,0.06);color:var(--ink)" data-close-modal="editBundleModal">Cancel</button>
+                <button type="submit" class="btn-primary btn-sm btn-gold">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===================== MODAL: Manage Bundle Products (CRUD) ===================== -->
+<div class="modal-overlay" id="manageBundleProductsModal">
+    <div class="modal">
+        <div class="modal-head"><h2>Manage Products in <span id="mbp_bundle_name"></span></h2><button class="modal-close" aria-label="Close" data-close-modal="manageBundleProductsModal">X</button></div>
+        <form method="post" id="manageBundleProductsForm" data-async-submit="bundle-products">{% csrf_token %}
+            <div style="margin-bottom:.75rem;font-size:.8125rem;color:var(--muted)">Check products to include in this bundle. Save updates the bundle items list.</div>
+            <div id="mbp_product_list" style="display:flex;flex-direction:column;gap:.3rem;max-height:400px;overflow-y:auto;padding:.25rem 0">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-sm" style="background:rgba(10,10,10,0.06);color:var(--ink)" data-close-modal="manageBundleProductsModal">Cancel</button>
+                <button type="submit" class="btn-primary btn-sm btn-gold">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===================== HIDDEN FORM: Upload Product Image ===================== -->
+<form method="post" enctype="multipart/form-data" id="uploadProductImgForm" style="display:none">{% csrf_token %}<input type="file" name="file" accept="image/*" id="uploadProductImgInput" class="js-auto-submit"></form>
+<form method="post" enctype="multipart/form-data" id="uploadBlogImgForm" style="display:none">{% csrf_token %}<input type="file" name="file" accept="image/*" id="uploadBlogImgInput" class="js-auto-submit"></form>
+<form method="post" enctype="multipart/form-data" id="uploadCatImgForm" style="display:none">{% csrf_token %}<input type="file" name="file" accept="image/*" id="uploadCatImgInput" class="js-auto-submit"></form>
+<form method="post" enctype="multipart/form-data" id="uploadBundleImgForm" style="display:none">{% csrf_token %}<input type="file" name="file" accept="image/*" id="uploadBundleImgInput" class="js-auto-submit"></form>
+
+<div class="toast" id="toast"></div>
+
+<style>
+    .inline-form{display:inline}
+    hr{border:none;border-top:1px solid rgba(10,10,10,0.05);margin:1rem 0}
+</style>
+
+<script src="/static/js/admin.js" defer></script>
+</body>
+</html>

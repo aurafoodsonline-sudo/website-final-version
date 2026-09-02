@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block og_type %}website{% endblock %}
+{% block content %}
+<div class="contact-page" itemscope itemtype="https://schema.org/LocalBusiness">
+    <meta itemprop="name" content="Aura Foods">
+    <meta itemprop="url" content="{{ request.build_absolute_uri }}">
+    <meta itemprop="image" content="/static/images/hero-spices.jpg">
+    <div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+        <meta itemprop="addressLocality" content="Karachi">
+        <meta itemprop="addressRegion" content="Sindh">
+        <meta itemprop="addressCountry" content="PK">
+    </div>
+    <link itemprop="sameAs" href="https://instagram.com/aurafoods">
+    <link itemprop="sameAs" href="https://facebook.com/aurafoods">
+    <div class="section-header" style="margin-bottom:0">
+        <div class="section-eyebrow">Get in Touch</div>
+        <h1 style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,3.5vw,3rem);margin-top:.75rem">We'd Love to Hear From You</h1>
+        <p style="color:var(--muted);margin-top:.75rem">Questions, wholesale inquiries, or just want to say hello - drop us a message.</p>
+    </div>
+    {% if success %}
+    <div class="alert-success" style="max-width:640px;margin:2rem auto;padding:1rem 1.5rem;background:#d4edda;color:#155724;border-radius:.75rem;text-align:center;font-weight:500">{{ success }}</div>
+    {% endif %}
+    <div class="contact-grid fade-up">
+        <div class="contact-info">
+            <h2>Reach Out</h2>
+            <p>We typically respond within 24 hours. For urgent orders, please reach out via WhatsApp.</p>
+            <div class="contact-details">
+                <div class="contact-detail">
+                    <div class="contact-detail-icon" aria-hidden="true">Tel</div>
+                    <div><div class="contact-detail-label">Phone</div><div class="contact-detail-value" itemprop="telephone">{{ settings.phone|default:'+92 335 2832967' }}</div></div>
+                </div>
+                <div class="contact-detail">
+                    <div class="contact-detail-icon" aria-hidden="true">Mail</div>
+                    <div><div class="contact-detail-label">Email</div><div class="contact-detail-value" itemprop="email">{{ settings.email|default:'aurafoodsonline@gmail.com' }}</div></div>
+                </div>
+                <div class="contact-detail">
+                    <div class="contact-detail-icon" aria-hidden="true">Map</div>
+                    <div><div class="contact-detail-label">Address</div><div class="contact-detail-value" itemprop="address">{{ settings.address|default:'Karachi, Sindh, Pakistan' }}</div></div>
+                </div>
+                <div class="contact-detail">
+                    <div class="contact-detail-icon" aria-hidden="true">Chat</div>
+                    <div><div class="contact-detail-label">WhatsApp</div><div class="contact-detail-value"><a href="https://wa.me/{{ settings.whatsapp|default:'923352832967' }}" target="_blank" rel="noopener" style="color:var(--olive);font-weight:600;text-decoration:none">Chat on WhatsApp</a></div></div>
+                </div>
+            </div>
+            <div class="footer-social" style="margin-top:2rem">
+                <a href="https://wa.me/{{ settings.whatsapp|default:'923352832967' }}" target="_blank" rel="noopener" aria-label="WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid rgba(10,10,10,0.2);color:var(--ink);text-decoration:none;font-size:.7rem;font-weight:600">WA</a>
+                <a href="https://instagram.com/aurafoods" target="_blank" rel="noopener" aria-label="Instagram" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid rgba(10,10,10,0.2);color:var(--ink);text-decoration:none;font-size:.7rem;font-weight:600">IG</a>
+                <a href="https://facebook.com/aurafoods" target="_blank" rel="noopener" aria-label="Facebook" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid rgba(10,10,10,0.2);color:var(--ink);text-decoration:none;font-size:.7rem;font-weight:600">FB</a>
+            </div>
+        </div>
+        <form class="contact-form" method="post" action="/contact/">
+            {% csrf_token %}
+            <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:1px;width:1px;opacity:0">
+            {% if error %}
+            <div class="alert-error" style="padding:.75rem 1rem;background:#f8d7da;color:#721c24;border-radius:.5rem">{{ error }}</div>
+            {% endif %}
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required maxlength="200" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required maxlength="254" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" maxlength="50" placeholder="+92 335 2832967">
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required minlength="10" maxlength="2000" placeholder="How can we help you?" style="padding:.75rem 1rem;border-radius:.75rem;border:1px solid var(--border);font-family:inherit;font-size:.9375rem;resize:vertical"></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;justify-content:center">Send Message</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

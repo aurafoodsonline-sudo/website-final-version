@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+    <div class="section-header">
+        <div class="section-eyebrow">Order Support</div>
+        <h1 class="section-title">Order {{ order.reference }}</h1>
+        <p class="section-subtitle">Ask about delivery, request a return, or request refund review.</p>
+    </div>
+    <form method="post" class="checkout-form" style="max-width:640px;margin:0 auto">
+        {% csrf_token %}
+        {% if error %}<div class="alert-error">{{ error }}</div>{% endif %}
+        <div class="form-group">
+            <label for="category">Request type</label>
+            <select id="category" name="category">
+                <option value="shipping">Shipping/tracking</option>
+                <option value="return">Return request</option>
+                <option value="refund">Refund request</option>
+                <option value="complaint">Complaint</option>
+                <option value="general">General help</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="message">Details</label>
+            <textarea id="message" name="message" rows="5" required minlength="10"></textarea>
+        </div>
+        <button class="btn-checkout" type="submit">Create Support Ticket</button>
+    </form>
+</section>
+{% endblock %}

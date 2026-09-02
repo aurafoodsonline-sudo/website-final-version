@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+    <div class="section-header">
+        <div class="section-eyebrow">Email Verification</div>
+        <h1 class="section-title">Customer Email</h1>
+        {% if success %}<p class="section-subtitle">{{ success }}</p>{% endif %}
+        {% if error %}<p class="section-subtitle">{{ error }}</p>{% endif %}
+        <p><a href="/account/">Go to account</a></p>
+    </div>
+</section>
+{% endblock %}

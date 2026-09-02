@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+    <div class="section-header">
+        <div class="section-eyebrow">Customer Account</div>
+        <h1 class="section-title">My Account</h1>
+        <p class="section-subtitle">View orders, delivery progress, support tickets, and your default delivery address.</p>
+        <p style="color:var(--muted)">Email status: {% if email_verified %}<strong>Verified</strong>{% else %}<strong>Verification pending</strong>{% endif %}</p>
+        <p><a href="/account/logout/">Logout</a></p>
+    </div>
+
+    <div class="checkout-grid">
+        <form method="post" class="checkout-form">
+            {% csrf_token %}
+            <h2>Default Address</h2>
+            {% if messages %}{% for message in messages %}<div class="alert-success">{{ message }}</div>{% endfor %}{% endif %}
+            {% with address=addresses.0 %}
+            <div class="form-group"><label for="full_name">Full name</label><input id="full_name" name="full_name" value="{{ address.full_name|default:'' }}" required></div>
+            <div class="form-group"><label for="phone">Phone</label><input id="phone" name="phone" value="{{ address.phone|default:'' }}" required></div>
+            <div class="form-group"><label for="city">City</label><input id="city" name="city" value="{{ address.city|default:'' }}" required></div>
+            <div class="form-group"><label for="address">Address</label><textarea id="address" name="address" rows="3" required>{{ address.address|default:'' }}</textarea></div>
+            {% endwith %}
+            <button class="btn-checkout" type="submit">Save Address</button>
+        </form>
+
+        <div class="cart-summary" style="display:block">
+            <h2>Order History</h2>
+            {% for order in orders %}
+            <div style="border-bottom:1px solid var(--border);padding:1rem 0">
+                <strong>{{ order.reference }}</strong>
+                <div style="color:var(--muted);font-size:.875rem">{{ order.created_at|date:"Y-m-d" }} | {{ order.get_status_display }} | Rs.{{ order.total|floatformat:0 }}</div>
+                {% if order.shipment %}<div style="color:var(--muted);font-size:.875rem">Delivery: {{ order.shipment.get_status_display }}{% if order.shipment.eta_label %} | ETA {{ order.shipment.eta_label }}{% endif %}</div>{% endif %}
+                <a href="/order-confirmation/ref/{{ order.reference }}/">View order</a>
+                <span> | </span><a href="/account/orders/{{ order.reference }}/support/">Order support</a>
+            </div>
+            {% empty %}
+            <p style="color:var(--muted)">No orders are linked to this account yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="cart-summary" style="display:block;margin-top:2rem">
+        <h2>Support Tickets</h2>
+        {% for ticket in tickets %}
+        <div style="border-bottom:1px solid var(--border);padding:1rem 0">
+            <strong>{{ ticket.public_reference }}</strong>
+            <div style="color:var(--muted);font-size:.875rem">{{ ticket.get_category_display }} | {{ ticket.get_status_display }}{% if ticket.order %} | Order {{ ticket.order.reference }}{% endif %}</div>
+        </div>
+        {% empty %}
+        <p style="color:var(--muted)">No support tickets yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
