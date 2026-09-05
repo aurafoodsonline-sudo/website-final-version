@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block og_type %}website{% endblock %}
+{% block content %}
+<section class="wholesale-hero" itemscope itemtype="https://schema.org/CollectionPage">
+    <span class="wholesale-kicker" itemprop="name">Wholesale &amp; Bulk Orders</span>
+    <h1 itemprop="headline">Authentic Spices at Wholesale Prices</h1>
+    <p itemprop="description">Premium Pakistani spices in 1kg wholesale packs. Hand-sourced from Sindh, stone-ground, and delivered across Pakistan. For bulk and bulk-buyer pricing, contact us directly.</p>
+    <a href="https://wa.me/923352832967" target="_blank" rel="noopener" class="btn-primary" style="margin-top:1.25rem">Request Bulk Quote on WhatsApp</a>
+</section>
+
+<section class="section" itemscope itemtype="https://schema.org/ItemList">
+    <div class="section-header fade-up">
+        <div class="section-eyebrow">Bulk 1kg Packs</div>
+        <h2 class="section-title">Wholesale Catalog</h2>
+        <p class="section-subtitle">Every product below is offered in a standard 1kg wholesale pack. Smaller sizes are available in the regular store.</p>
+    </div>
+    {% if wholesale_items %}
+    <div class="grid-4" itemprop="itemListElement">
+        {% for item in wholesale_items %}
+        <div class="product-card fade-up" itemscope itemtype="https://schema.org/Product">
+            <a href="/product/{{ item.product.slug }}/" class="card-link">
+                {% if item.product.best_seller %}<span class="card-badge card-badge-seller">Best Seller</span>{% endif %}
+                <img src="{{ item.variant.effective_image|default:item.product.image }}" alt="{{ item.product.name }} - 1kg wholesale pack - Aura Foods" class="card-img" loading="lazy" itemprop="image" width="300" height="300">
+            </a>
+            <div class="product-info">
+                <a href="/product/{{ item.product.slug }}/" class="card-link">
+                    <div class="product-name" itemprop="name">{{ item.product.name }}</div>
+                    <div class="product-tagline" itemprop="description">{{ item.product.tagline }}</div>
+                    <div class="product-price-row">
+                        <span class="product-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><span itemprop="price" data-card-price>{{ item.variant.public_price }}</span><meta itemprop="priceCurrency" content="PKR"><meta itemprop="availability" content="{% if item.variant.is_sellable %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"></span>
+                        <span class="kg-pill" itemprop="unitSize">{{ item.variant.display_weight }}</span>
+                    </div>
+                </a>
+                {% if item.variant.is_sellable %}
+                <button class="btn-add-cart" data-action="add-card-to-cart" data-variant-id="{{ item.variant.id }}" data-price="{{ item.variant.public_price }}" data-image="{{ item.variant.effective_image|default:item.product.image }}" data-weight="{{ item.variant.display_weight }}" data-product-id="{{ item.product.id }}">Add to Cart</button>
+                {% else %}
+                <button class="btn-add-cart" disabled>Out of Stock</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">Wholesale packs are being prepared. Please check back soon or contact us on WhatsApp.</div>
+    {% endif %}
+    <div class="wholesale-note" style="margin-top:2.5rem">
+        Retail customers can continue shopping all regular pack sizes in the <a href="/shop">store</a>. Wholesale packs are standardised at 1kg for consistent bulk pricing.
+    </div>
+</section>
+{% endblock %}

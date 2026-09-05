@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Aura Foods</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,sans-serif;background:#faf7f2;display:flex;align-items:center;justify-content:center;min-height:100vh}.login-card{background:#fff;border-radius:1.5rem;padding:3rem;width:400px;max-width:90vw;box-shadow:0 20px 60px rgba(10,10,10,0.08)}.logo{font-family:'Playfair Display',serif;font-size:1.5rem;color:#0a0a0a;text-align:center;margin-bottom:.5rem}.logo span{color:#c9a84c}h1{font-size:1.25rem;text-align:center;color:#666;margin-bottom:2rem;font-weight:400}label{font-size:.8125rem;font-weight:600;color:#666;display:block;margin-bottom:.35rem}input{width:100%;padding:.75rem 1rem;border:1px solid #e0ddd8;border-radius:.75rem;font-size:.9375rem;margin-bottom:1.25rem;transition:border .2s}input:focus{outline:none;border-color:#c9a84c}button{width:100%;padding:.875rem;background:linear-gradient(135deg,#c9a84c,#d4b85a);border:none;border-radius:9999px;font-size:.9375rem;font-weight:700;color:#0a0a0a;cursor:pointer;transition:transform .2s}button:hover{transform:translateY(-1px)}.error{background:#fde8e8;color:#c0392b;padding:.75rem;border-radius:.75rem;font-size:.875rem;margin-bottom:1rem;text-align:center}.hint{font-size:.75rem;color:#999;text-align:center;margin-top:1rem}
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo"><img src="/static/uploads/logo.png?v=3" alt="Aura Foods logo" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:0 auto .6rem">✦ <span>AURA</span> FOODS</div>
+        <h1>Admin Dashboard</h1>
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+        <form method="post" action="/admin/login/">
+            {% csrf_token %}
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required placeholder="admin">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Enter password">
+            {% if mfa_required %}
+            <label for="mfa_token">Authenticator Code</label>
+            <input type="text" id="mfa_token" name="mfa_token" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required placeholder="6-digit code">
+            {% endif %}
+            <button type="submit">Sign In</button>
+        </form>
+        <div class="hint">Staff access only</div>
+    </div>
+</body>
+</html>

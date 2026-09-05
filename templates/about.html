@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block og_type %}website{% endblock %}
+{% block content %}
+<section class="about-hero" itemscope itemtype="https://schema.org/AboutPage">
+    <h1 itemprop="name">Our Story - Aura Foods Organic Spices</h1>
+    <p itemprop="description">From the sun-drenched fields of Sindh to your kitchen - Aura Foods is on a mission to bring back the authentic taste of Pakistani spices.</p>
+</section>
+<div class="about-content" itemscope itemtype="https://schema.org/Organization">
+    <meta itemprop="name" content="Aura Foods">
+    <meta itemprop="url" content="{{ request.build_absolute_uri }}">
+    <meta itemprop="description" content="Premium organic spice company based in Sindh, Pakistan. Hand-sourced, stone-ground, and freshly packed spices delivered across Pakistan.">
+    <link itemprop="sameAs" href="https://instagram.com/aurafoods">
+    <link itemprop="sameAs" href="https://facebook.com/aurafoods">
+    <div class="about-grid fade-up">
+        <div class="about-text">
+            <h2>Rooted in Sindh, <em style="color:var(--gold);font-style:normal">Trusted Everywhere</em></h2>
+            <p>Aura Foods was born in the spice heartland of Pakistan - Kunri, Sindh. For generations, our families have grown, harvested, and traded spices using methods passed down through centuries.</p>
+            <p>We work directly with small family farms, ensuring fair prices and premium quality. Every batch is traceable back to its origin. Every jar contains spices that are sun-dried, hand-sorted, and stone-ground to preserve the natural oils and aroma.</p>
+            <p>No shortcuts. No additives. Just pure, honest spice that tastes like home.</p>
+            <div class="stats-grid">
+                <div><div class="stat-number">8+</div><div class="stat-label">Premium Products</div></div>
+                <div><div class="stat-number">50+</div><div class="stat-label">Partner Farms</div></div>
+                <div><div class="stat-number">100%</div><div class="stat-label">Organic Promise</div></div>
+            </div>
+        </div>
+        <div style="position:relative">
+            <div class="img-hover-switch" style="border-radius:1rem" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+                <img src="/static/uploads/story-en.jpg" alt="Traditional spice grinding in Sindh, Pakistan - Aura Foods heritage" class="img-default" style="height:auto" loading="lazy" itemprop="contentUrl" width="1254" height="1254">
+                <img src="/static/uploads/story-ur.jpg" alt="مصالحہ پیسنے کی روایتی تکنیک - Aura Foods کا معیار" class="img-hover" style="height:auto" loading="lazy" itemprop="contentUrl" width="1254" height="1254">
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header" style="margin-top:5rem">
+        <div class="section-eyebrow">Our Values</div>
+        <h2 class="section-title">What We Stand For</h2>
+    </div>
+    <div class="why-grid">
+        {% for item in why_items %}
+        <div class="why-card">
+            <div class="why-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">{{ item.svg | safe }}</svg>
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

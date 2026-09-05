@@ -1,0 +1,2263 @@
+{% load static %}
+{% load shop_extras %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>AuraFoods Operations - ERP Console</title>
+  <link rel="stylesheet" href="{% static 'frontend/app.css' %}?v=6.5.2">
+  <style>
+    /* ── Storefront Catalog (Products/Categories/Bundles) ─────────────────────
+       Migrated from the CMS admin dashboard. Everything here uses uniquely
+       prefixed "cat-" classes (plus two new badge modifiers) so nothing in
+       this block can override app.css's existing rules elsewhere on the page. */
+    .badge-gold { background: var(--amber-100, #fef3c7); color: var(--amber-700, #b45309); }
+    .badge-inactive { background: var(--red-100, #fee2e2); color: var(--red-700, #b91c1c); }
+
+    .cat-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 1000; backdrop-filter: blur(3px); justify-content: center; align-items: flex-start; padding: 32px 16px; overflow-y: auto; }
+    .cat-modal-overlay.cat-open { display: flex; }
+    .cat-modal { background: #fff; border-radius: 10px; width: 100%; max-width: 720px; padding: 28px; margin: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+    .cat-modal-sm { max-width: 480px; }
+    .cat-modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid rgba(15,23,42,0.08); }
+    .cat-modal-head h2 { font-size: 16px; font-weight: 700; margin: 0; }
+    .cat-modal-close { width: 34px; height: 34px; border-radius: 6px; border: none; background: rgba(15,23,42,0.05); cursor: pointer; font-size: 16px; }
+    .cat-modal-close:hover { background: rgba(15,23,42,0.1); }
+    .cat-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(15,23,42,0.08); }
+    .cat-dyn-row { display: flex; align-items: center; gap: 6px; padding: 6px 0; border-bottom: 1px solid rgba(15,23,42,0.05); }
+    .cat-dyn-row input[type="text"], .cat-dyn-row input[type="number"] { padding: 6px 8px; border: 1.5px solid var(--ink-200, #e2e8f0); border-radius: 6px; font-size: 12px; min-height: auto; }
+    .cat-dyn-remove { width: 22px; height: 22px; flex-shrink: 0; border: none; border-radius: 4px; background: rgba(15,23,42,0.06); cursor: pointer; font-size: 12px; line-height: 1; }
+    .cat-checkbox-row { display: flex !important; flex-direction: row !important; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid rgba(15,23,42,0.06); }
+    .cat-checkbox-row img { width: 32px; height: 32px; border-radius: 4px; object-fit: cover; }
+    .cat-checkbox-row input[type="checkbox"] { width: 16px; height: 16px; min-height: auto; flex-shrink: 0; }
+    .cat-inline-checks { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+    .cat-inline-checks label { flex-direction: row !important; align-items: center; gap: 6px; font-weight: 400; text-transform: none; }
+    .cat-inline-checks input[type="checkbox"] { width: 16px; height: 16px; min-height: auto; }
+    .cat-row-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ═══ CONFIRMATION MODAL ════════════════════════════════════════════════ -->
+<div id="confirm-modal-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="confirm-title">
+  <div class="confirm-modal">
+    <h3>
+      <span class="confirm-icon" aria-hidden="true">!</span>
+      <span id="confirm-title">Confirm Action</span>
+    </h3>
+    <p id="confirm-message">Are you sure you want to proceed?</p>
+    <div class="modal-actions">
+      <button id="confirm-cancel" class="btn btn-secondary">Cancel</button>
+      <button id="confirm-ok" class="btn btn-danger">Confirm &amp; Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP SHELL ════════════════════════════════════════════════════════ -->
+<div class="app-shell">
+
+  <!-- ── SIDEBAR ──────────────────────────────────────────────────────── -->
+  <aside class="side-rail" id="primary-navigation" aria-label="Primary navigation">
+    <div class="brand-block">
+      <img src="/static/uploads/logo.png?v=3" alt="Aura Foods logo" class="brand-mark" style="width:36px;height:36px;border-radius:50%;object-fit:cover" width="36" height="36">
+      <div>
+        <strong>AuraFoods</strong>
+        <span>Inventory &amp; Purchase ERP</span>
+      </div>
+    </div>
+
+    <nav class="nav-stack" aria-label="Operations">
+      <span class="nav-section-label">Overview</span>
+      <a href="#overview" class="active">
+        <span class="nav-icon" aria-hidden="true">DB</span>Dashboard
+      </a>
+
+      <span class="nav-section-label">Master Data</span>
+      <a href="#masters">
+        <span class="nav-icon" aria-hidden="true">MD</span>Masters
+      </a>
+      <a href="#opening-balances">
+        <span class="nav-icon" aria-hidden="true">OB</span>Opening Balances
+      </a>
+
+      {% if can.admin_configure and user.is_staff %}
+      <span class="nav-section-label">Storefront</span>
+      <a href="#storefront-catalog">
+        <span class="nav-icon" aria-hidden="true">SC</span>Storefront Catalog
+      </a>
+      {% endif %}
+
+      <span class="nav-section-label">Procurement</span>
+      <a href="#purchase">
+        <span class="nav-icon" aria-hidden="true">PO</span>Direct Purchase / GRN
+      </a>
+      {% if can.supplier_rate_view %}<a href="#supplier-rates"><span class="nav-icon" aria-hidden="true">RA</span>Rate Agreements</a>{% endif %}
+      <a href="#quality">
+        <span class="nav-icon" aria-hidden="true">QA</span>Quality &amp; GRN Approval
+      </a>
+
+      <span class="nav-section-label">Production</span>
+      <a href="#grinding">
+        <span class="nav-icon" aria-hidden="true">PR</span>Grinding / Production
+      </a>
+      <a href="#packing">
+        <span class="nav-icon" aria-hidden="true">PK</span>Packing
+      </a>
+      {% if can.production_log_view %}<a href="#production-logs"><span class="nav-icon" aria-hidden="true">PL</span>Shift Logs</a>{% endif %}
+
+      {% if can.customer_view %}
+      <span class="nav-section-label">Sales Enablement</span>
+      <a href="#customers"><span class="nav-icon" aria-hidden="true">CM</span>Customers</a>
+      {% endif %}
+
+      <span class="nav-section-label">Finance</span>
+      <a href="#payables">
+        <span class="nav-icon" aria-hidden="true">AP</span>Payables
+      </a>
+      <a href="#adjustments">
+        <span class="nav-icon" aria-hidden="true">AD</span>Adjustments
+      </a>
+
+      <span class="nav-section-label">Inventory</span>
+      <a href="#stock">
+        <span class="nav-icon" aria-hidden="true">ST</span>Stock Operations
+      </a>
+
+      <span class="nav-section-label">Analytics</span>
+      <a href="#opening-stock">
+        <span class="nav-icon" aria-hidden="true">OS</span>Opening Stock
+      </a>
+      <a href="#recipes">
+        <span class="nav-icon" aria-hidden="true">RC</span>Recipes
+      </a>
+      <a href="#requirements">
+        <span class="nav-icon" aria-hidden="true">RQ</span>Purchase Requirements
+      </a>
+
+      <span class="nav-section-label">Analytics</span>
+      <a href="#reports">
+        <span class="nav-icon" aria-hidden="true">RP</span>Reports
+      </a>
+      {% if can.scheduled_task_view %}<a href="#scheduled-tasks"><span class="nav-icon" aria-hidden="true">ST</span>Scheduled Tasks</a>{% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div>AuraFoods ERP v5 &rarr; v6</div>
+      <div style="margin-top:4px"><a href="/admin/">Django Admin</a></div>
+    </div>
+  </aside>
+
+  <!-- ── WORKSPACE ────────────────────────────────────────────────────── -->
+  <main class="workspace" id="main-content">
+
+    <!-- Top bar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="mobile-nav-toggle" type="button" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false"><span aria-hidden="true">&#9776;</span></button>
+        <div>
+          <p class="eyebrow">Operations Console</p>
+          <h1>AuraFoods ERP</h1>
+        </div>
+      </div>
+      <div class="operator-chip">
+        <div class="avatar" aria-hidden="true">{{ request.user.username|first|upper }}</div>
+        <span>{{ request.user.username }}</span>
+        <a href="/admin/logout/" style="margin-left:6px">Sign out</a>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: DASHBOARD / OVERVIEW
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="overview" aria-label="Dashboard metrics">
+        <div class="section-header">
+          <div>
+            <h2>Dashboard</h2>
+            <p>Live operational snapshot - balances, stock, and workflow status</p>
+          </div>
+        </div>
+        <div class="metric-grid">
+          <article class="metric-card">
+            <span>Suppliers</span>
+            <strong>{{ metrics.suppliers }}</strong>
+            <span class="metric-sub">Active accounts</span>
+          </article>
+          {% if can.view_financial_data %}<article class="metric-card {% if metrics.payable > 0 %}warning{% endif %}">
+            <span>Total Payable</span>
+            <strong>{{ metrics.payable|floatformat:0 }}</strong>
+            <span class="metric-sub">PKR outstanding</span>
+          </article>
+          <article class="metric-card">
+            <span>Advance Balance</span>
+            <strong>{{ metrics.advance|floatformat:0 }}</strong>
+            <span class="metric-sub">PKR with suppliers</span>
+          </article>{% endif %}
+          {% if can.view_inventory_data %}<article class="metric-card success">
+            <span>Stock Value</span>
+            <strong>{{ metrics.stock_value|floatformat:0 }}</strong>
+            <span class="metric-sub">PKR at cost</span>
+          </article>{% endif %}
+          {% if can.grn_view %}<article class="metric-card {% if metrics.open_grns > 0 %}warning{% endif %}">
+            <span>Open GRNs</span>
+            <strong>{{ metrics.open_grns }}</strong>
+            <span class="metric-sub">Pending approval</span>
+          </article>{% endif %}
+          {% if can.view_inventory_data %}<article class="metric-card {% if metrics.near_expiry_count > 0 %}warning{% endif %}">
+            <span>Near Expiry</span>
+            <strong>{{ metrics.near_expiry_count }}</strong>
+            <span class="metric-sub">Batches ≤ 30 days</span>
+          </article>
+          <article class="metric-card {% if metrics.expired_count > 0 %}alert{% endif %}">
+            <span>Expired Stock</span>
+            <strong>{{ metrics.expired_count }}</strong>
+            <span class="metric-sub">Batches expired</span>
+          </article>{% endif %}
+          {% if can.view_financial_data %}<article class="metric-card">
+            <span>Ledger Entries</span>
+            <strong>{{ metrics.ledger_rows }}</strong>
+            <span class="metric-sub">Total transactions</span>
+          </article>{% endif %}
+          {% if can.purchase_create %}<article class="metric-card {% if metrics.open_requirements > 0 %}warning{% endif %}">
+            <span>Open Requirements</span>
+            <strong>{{ metrics.open_requirements }}</strong>
+            <span class="metric-sub">Purchase demands pending</span>
+          </article>{% endif %}
+          {% if can.recipe_view %}<article class="metric-card success">
+            <span>Active Recipes</span>
+            <strong>{{ metrics.active_recipes }}</strong>
+            <span class="metric-sub">Approved formulas</span>
+          </article>{% endif %}
+        </div>
+
+        <!-- Recent activity tables -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          {% if can.view_financial_data %}<div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Recent Invoices</h2>
+                <p>Latest 8 supplier invoices</p>
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr>
+                  <th>Number</th><th>Supplier</th><th>Amount</th><th>Outstanding</th><th>Status</th>
+                </tr></thead>
+                <tbody>
+                {% for inv in recent_invoices %}
+                  <tr>
+                    <td class="mono">{{ inv.number }}</td>
+                    <td>{{ inv.supplier.code }}</td>
+                    <td class="num">{{ inv.amount|floatformat:2 }}</td>
+                    <td class="num">{{ inv.outstanding_amount|floatformat:2 }}</td>
+                    <td><span class="badge badge-{{ inv.status }}">{{ inv.status }}</span></td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5" class="text-muted" style="text-align:center;padding:24px">No invoices yet</td></tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>{% endif %}
+
+          {% if can.view_inventory_data %}<div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Recent Stock Batches</h2>
+                <p>Latest 10 batches received</p>
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr>
+                  <th>Batch</th><th>Product</th><th>Warehouse</th><th>Qty on Hand</th><th>State</th>
+                </tr></thead>
+                <tbody>
+                {% for b in recent_batches %}
+                  <tr>
+                    <td class="mono">{{ b.batch_number }}</td>
+                    <td>{{ b.product.code }}</td>
+                    <td>{{ b.warehouse.code }}</td>
+                    <td class="num">{{ b.quantity_on_hand|floatformat:3 }}</td>
+                    <td><span class="badge badge-{{ b.stock_state|default:'draft' }}">{{ b.stock_state|default:"-" }}</span></td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="4" class="text-muted" style="text-align:center;padding:24px">No batches yet</td></tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>{% endif %}
+        </div>
+
+        <!-- Pending GRNs alert -->
+        {% if can.grn_view and pending_grns %}
+        <div class="alert alert-warning" style="margin-top:16px">
+          <span aria-hidden="true">!</span>
+          <div>
+            <strong>{{ pending_grns|length }} GRN(s) pending action</strong> - quality inspection or approval required.
+            <a href="#quality" style="margin-left:8px">Go to Quality &amp; Approval →</a>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if can.view_inventory_data and metrics.expired_count > 0 %}
+        <div class="alert alert-error" style="margin-top:8px">
+          <span aria-hidden="true">!</span>
+          <strong>{{ metrics.expired_count }} expired batch(es) still have stock on hand.</strong>
+          Check the Expiry Report and initiate write-off or return.
+        </div>
+        {% endif %}
+
+        {% if can.purchase_create and metrics.open_requirements > 0 %}
+        <div class="alert alert-info" style="margin-top:8px">
+          <span aria-hidden="true">i</span>
+          <strong>{{ metrics.open_requirements }} purchase requirement(s) pending.</strong>
+          <a href="#requirements" style="margin-left:8px">View Requirements →</a>
+        </div>
+        {% endif %}
+
+        {% if can.purchase_create and open_requirements %}
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header">
+            <div><h2>Open Purchase Requirements</h2><p>Pending demand notices awaiting PO creation</p></div>
+            <a href="#requirements" class="btn btn-secondary btn-sm">Raise New →</a>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Ref</th><th>Product</th><th>Qty Required</th><th>Required By</th><th>Source</th><th>Status</th></tr></thead>
+              <tbody>
+              {% for r in open_requirements %}
+                <tr>
+                  <td class="mono">{{ r.number }}</td>
+                  <td>{{ r.product__code }} - {{ r.product__name }}</td>
+                  <td class="num">{{ r.required_quantity|floatformat:3 }}</td>
+                  <td>{{ r.required_by_date|default:"-" }}</td>
+                  <td><span class="chip">{{ r.source }}</span></td>
+                  <td><span class="badge badge-{{ r.status }}">{{ r.status }}</span></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: MASTER DATA
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="masters">
+        <div class="section-header">
+          <div>
+            <h2>Master Data</h2>
+            <p>Create and manage suppliers, products, warehouses, and cash/bank accounts</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="tab-bar" role="tablist">
+            <button class="tab-button active" data-tab="tab-suppliers" role="tab">Suppliers</button>
+            <button class="tab-button" data-tab="tab-products" role="tab">Products</button>
+            <button class="tab-button" data-tab="tab-warehouses" role="tab">Warehouses</button>
+            <button class="tab-button" data-tab="tab-accounts" role="tab">Cash / Bank Accounts</button>
+            <button class="tab-button" data-tab="tab-units" role="tab">Units of Measure</button>
+          </div>
+
+          <!-- Suppliers tab -->
+          <div class="tab-panel active" data-panel="tab-suppliers">
+            <div class="form-grid">
+              {% if can.admin_configure %}
+              <div class="form-card">
+                <h3><span class="form-icon">SP</span>New Supplier</h3>
+                <form id="f-create-supplier" class="field-group">
+                  <label>Code <span>Unique short code e.g. SUP-001</span>
+                    <input name="code" required maxlength="40" placeholder="SUP-001">
+                  </label>
+                  <label>Full Name
+                    <input name="name" required maxlength="160" placeholder="Supplier Legal Name">
+                  </label>
+                  <label>NTN / Tax ID <span>Optional</span>
+                    <input name="tax_identifier" maxlength="40" placeholder="1234567-8">
+                  </label>
+                  <label>Payment Terms (days)
+                    <input name="payment_terms_days" type="number" min="0" value="0">
+                  </label>
+                  <label>Contact Person
+                    <input name="contact_person" maxlength="120">
+                  </label>
+                  <label>Phone
+                    <input name="contact_phone" maxlength="40">
+                  </label>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Supplier</button>
+                  </div>
+                </form>
+              </div>
+              {% endif %}
+
+              <div class="form-card">
+                <h3><span class="form-icon">LS</span>Existing Suppliers ({{ suppliers|length }})</h3>
+                <div class="table-wrapper" style="max-height:320px;overflow-y:auto">
+                  <table class="data-table">
+                    <thead><tr><th>Code</th><th>Name</th>{% if can.view_financial_data %}<th>Payable</th><th>Advance</th>{% endif %}</tr></thead>
+                    <tbody>
+                    {% for s in suppliers %}
+                      <tr>
+                        <td class="mono">{{ s.code }}</td>
+                        <td>{{ s.name }}</td>
+                        {% if can.view_financial_data %}<td class="num">{{ s.payable_balance|floatformat:2 }}</td>
+                        <td class="num">{{ s.advance_balance|floatformat:2 }}</td>{% endif %}
+                      </tr>
+                    {% empty %}
+                      <tr><td colspan="{% if can.view_financial_data %}4{% else %}2{% endif %}" class="text-muted" style="text-align:center;padding:16px">No suppliers</td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products tab -->
+          <div class="tab-panel" data-panel="tab-products">
+            <div class="form-grid">
+              {% if can.admin_configure %}
+              <div class="form-card">
+                <h3><span class="form-icon">PR</span>New Product</h3>
+                <form id="f-create-product" class="field-group">
+                  <label>Code
+                    <input name="code" required maxlength="40" placeholder="RAW-001">
+                  </label>
+                  <label>Name
+                    <input name="name" required maxlength="160" placeholder="Turmeric Powder Raw">
+                  </label>
+                  <label>Product Type
+                    <select name="product_type" required>
+                      <option value="">- select type -</option>
+                      <option value="raw">Raw Material</option>
+                      <option value="powder">Powder (Grinding Output)</option>
+                      <option value="finished">Finished Good</option>
+                      <option value="packaging">Packaging Material</option>
+                    </select>
+                  </label>
+                  <label>Base Unit
+                    <select name="base_unit" required>
+                      <option value="">- select unit -</option>
+                      {% for u in units %}
+                        <option value="{{ u.id }}">{{ u.code }} - {{ u.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </label>
+                  <label>Grammage <span>For finished packs - grams per unit</span>
+                    <input name="grammage" type="number" step="0.001" placeholder="0.000">
+                  </label>
+                  <label>Minimum Stock Level
+                    <input name="minimum_stock" type="number" step="0.001" value="0">
+                  </label>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Product</button>
+                  </div>
+                </form>
+              </div>
+              {% endif %}
+
+              <div class="form-card">
+                <h3><span class="form-icon">LP</span>Products ({{ all_products|length }})</h3>
+                <div class="table-wrapper" style="max-height:320px;overflow-y:auto">
+                  <table class="data-table">
+                    <thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Unit</th></tr></thead>
+                    <tbody>
+                    {% for p in all_products %}
+                      <tr>
+                        <td class="mono">{{ p.code }}</td>
+                        <td>{{ p.name }}</td>
+                        <td><span class="chip">{{ p.product_type }}</span></td>
+                        <td>{{ p.base_unit__code }}</td>
+                      </tr>
+                    {% empty %}
+                      <tr><td colspan="4" class="text-muted" style="text-align:center;padding:16px">No products</td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Warehouses tab -->
+          <div class="tab-panel" data-panel="tab-warehouses">
+            <div class="form-grid">
+              {% if can.admin_configure %}
+              <div class="form-card">
+                <h3><span class="form-icon">WH</span>New Warehouse</h3>
+                <form id="f-create-warehouse" class="field-group">
+                  <label>Code <input name="code" required maxlength="40" placeholder="WH-MAIN"></label>
+                  <label>Name <input name="name" required maxlength="160" placeholder="Main Store"></label>
+                  <label>Location / Address
+                    <input name="location" maxlength="200">
+                  </label>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Warehouse</button>
+                  </div>
+                </form>
+              </div>
+              {% endif %}
+              <div class="form-card">
+                <h3><span class="form-icon">LW</span>Warehouses ({{ warehouses|length }})</h3>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead><tr><th>Code</th><th>Name</th></tr></thead>
+                    <tbody>
+                    {% for w in warehouses %}
+                      <tr><td class="mono">{{ w.code }}</td><td>{{ w.name }}</td></tr>
+                    {% empty %}
+                      <tr><td colspan="2" class="text-muted" style="text-align:center;padding:16px">No warehouses</td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cash/Bank accounts tab -->
+          <div class="tab-panel" data-panel="tab-accounts">
+            <div class="form-grid">
+              {% if can.admin_configure %}
+              <div class="form-card">
+                <h3><span class="form-icon">BA</span>New Cash / Bank Account</h3>
+                <form id="f-create-account" class="field-group">
+                  <label>Code <input name="code" required maxlength="40" placeholder="CASH-MAIN"></label>
+                  <label>Name <input name="name" required maxlength="160" placeholder="Main Petty Cash"></label>
+                  <label>Type
+                    <select name="account_type" required>
+                      <option value="">- select -</option>
+                      <option value="cash">Cash</option>
+                      <option value="bank">Bank</option>
+                    </select>
+                  </label>
+                  <label>Bank Name <span>Leave blank for cash</span>
+                    <input name="bank_name" maxlength="120">
+                  </label>
+                  <label>Account Number <span>Leave blank for cash</span>
+                    <input name="account_number" maxlength="60">
+                  </label>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                  </div>
+                </form>
+              </div>
+              {% endif %}
+              <div class="form-card">
+                <h3><span class="form-icon">LA</span>Accounts ({{ cash_bank_accounts|length }})</h3>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Balance</th></tr></thead>
+                    <tbody>
+                    {% for a in cash_bank_accounts %}
+                      <tr>
+                        <td class="mono">{{ a.code }}</td>
+                        <td>{{ a.name }}</td>
+                        <td><span class="chip">{{ a.account_type }}</span></td>
+                        <td class="num">{{ a.balance|floatformat:2 }}</td>
+                      </tr>
+                    {% empty %}
+                      <tr><td colspan="4" class="text-muted" style="text-align:center;padding:16px">No accounts</td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Units of measure tab -->
+          <div class="tab-panel" data-panel="tab-units">
+            <div class="form-grid">
+              {% if can.admin_configure %}
+              <div class="form-card">
+                <h3><span class="form-icon">UM</span>New Unit of Measure</h3>
+                <form id="f-create-uom" class="field-group">
+                  <label>Code <input name="code" required maxlength="20" placeholder="KG"></label>
+                  <label>Name <input name="name" required maxlength="80" placeholder="Kilogram"></label>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create UoM</button>
+                  </div>
+                </form>
+              </div>
+              {% endif %}
+              <div class="form-card">
+                <h3><span class="form-icon">LU</span>Units ({{ units|length }})</h3>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead><tr><th>Code</th><th>Name</th></tr></thead>
+                    <tbody>
+                    {% for u in units %}
+                      <tr><td class="mono">{{ u.code }}</td><td>{{ u.name }}</td></tr>
+                    {% empty %}
+                      <tr><td colspan="2" class="text-muted" style="text-align:center;padding:16px">No units</td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      {% if can.admin_configure and user.is_staff %}
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: STOREFRONT CATALOG (Products / Categories / Bundles)
+           Migrated from the CMS admin dashboard (/admin/dashboard/). These
+           manage shop.Product / shop.Category / shop.Bundle — the public
+           storefront catalog — via the same classic endpoints the CMS used
+           (shop/views.py), submitted here over fetch so the page never
+           navigates away. This is a separate data model from the ERP
+           "Products" tab under Master Data above (that one is erp.Product,
+           the internal inventory/production SKU master).
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="storefront-catalog">
+        <div class="section-header">
+          <div>
+            <h2>Storefront Catalog</h2>
+            <p>Manage the public website's products, categories, and bundles</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="tab-bar" role="tablist">
+            <button class="tab-button active" data-tab="cat-tab-products" role="tab">Products</button>
+            <button class="tab-button" data-tab="cat-tab-categories" role="tab">Categories</button>
+            <button class="tab-button" data-tab="cat-tab-bundles" role="tab">Bundles</button>
+          </div>
+
+          <!-- Products tab -->
+          <div class="tab-panel active" data-panel="cat-tab-products">
+            <div class="form-grid">
+              <div class="form-card">
+                <h3><span class="form-icon">PR</span>New Storefront Product</h3>
+                <form id="cat-f-create-product" class="field-group" data-cat-ajax data-cat-success="Product added." action="/admin/product/add/" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <label>Product Name <input type="text" name="name" required></label>
+                  <label>Tagline <input type="text" name="tagline"></label>
+                  <label>Price (Rs.) <input name="price" type="number" step="1" required></label>
+                  <label>Old Price (Rs.) <input name="old_price" type="number" step="1" value="0"></label>
+                  <label>Weight <input type="text" name="weight" value="200g"></label>
+                  <label>Image <input type="file" name="file" accept="image/*"></label>
+                  <label>Category
+                    <select name="category_id">
+                      <option value="">- none -</option>
+                      {% for c in shop_categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+                    </select>
+                  </label>
+                  <div class="form-actions" style="justify-content:space-between;align-items:center">
+                    <span class="muted">Grammage Options</span>
+                    <button type="button" class="btn btn-secondary btn-sm" data-cat-action="add-grammage-row" data-cat-target="np_grammage">+ Add Grammage Option</button>
+                  </div>
+                  <div id="np_grammage"></div>
+                  <label>Description <textarea name="description" rows="2"></textarea></label>
+                  <label>Ingredients <textarea name="ingredients" rows="1"></textarea></label>
+                  <label>Usage <textarea name="usage" rows="1"></textarea></label>
+                  <div class="cat-inline-checks">
+                    <label><input type="checkbox" name="best_seller" value="1"> Best Seller</label>
+                    <label><input type="checkbox" name="new_arrival" value="1"> New Arrival</label>
+                    <label><input type="hidden" name="active" value="0"><input type="checkbox" name="active" value="1" checked> Active</label>
+                    <label><input type="hidden" name="featured" value="0"><input type="checkbox" name="featured" value="1"> Featured</label>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="form-card">
+                <h3><span class="form-icon">LP</span>Storefront Products ({{ shop_products|length }})</h3>
+                <div class="table-wrapper" style="max-height:420px;overflow-y:auto">
+                  <table class="data-table">
+                    <thead><tr><th></th><th>Name</th><th>Price</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    {% for p in shop_products %}
+                      <tr>
+                        <td><img src="{{ p.image|default:'/static/images/hero-spices.jpg' }}" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;display:block"></td>
+                        <td>{{ p.name }}<br><span class="text-muted" style="font-size:11px">{{ p.tagline }}</span></td>
+                        <td class="num">Rs.{{ p.price }}{% if p.old_price and p.old_price > p.price %}<br><span class="text-muted" style="font-size:11px;text-decoration:line-through">Rs.{{ p.old_price }}</span>{% endif %}</td>
+                        <td>{{ p.category.name|default:"-" }}</td>
+                        <td>
+                          <span class="badge {% if p.active %}badge-active{% else %}badge-inactive{% endif %}">{% if p.active %}Active{% else %}Inactive{% endif %}</span>
+                          {% if p.best_seller %}<span class="badge badge-gold">Bestseller</span>{% endif %}
+                          {% if p.featured %}<span class="badge badge-gold">Featured</span>{% endif %}
+                        </td>
+                        <td>
+                          <div class="cat-row-actions">
+                            <button type="button" class="btn btn-secondary btn-sm" data-cat-edit-product="{{ p.id }}">Edit</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-cat-upload-product-image="{{ p.id }}">Image</button>
+                            <button type="button" class="btn btn-danger btn-sm" data-confirm-post="/admin/product/delete/{{ p.id }}/" data-confirm-title="Delete {{ p.name }}?">Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    {% empty %}
+                      <tr><td colspan="6" class="text-muted" style="text-align:center;padding:16px">No products</td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categories tab -->
+          <div class="tab-panel" data-panel="cat-tab-categories">
+            <div class="form-grid">
+              <div class="form-card">
+                <h3><span class="form-icon">CA</span>New Category</h3>
+                <form id="cat-f-create-category" class="field-group" data-cat-ajax data-cat-success="Category added." action="/admin/category/add/" method="post">
+                  {% csrf_token %}
+                  <label>Category Name <input type="text" name="name" required></label>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="form-card">
+                <h3><span class="form-icon">LC</span>Categories ({{ shop_categories|length }})</h3>
+                <div class="table-wrapper" style="max-height:420px;overflow-y:auto">
+                  <table class="data-table">
+                    <thead><tr><th>Name</th><th>Products</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    {% for c in shop_categories %}
+                      <tr>
+                        <td>{{ c.name }}</td>
+                        <td class="num">{{ shop_category_product_counts|get_item:c.id|default:0 }}</td>
+                        <td>
+                          <div class="cat-row-actions">
+                            <button type="button" class="btn btn-secondary btn-sm" data-cat-edit-category="{{ c.id }}" data-name="{{ c.name }}">Edit</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-cat-upload-category-image="{{ c.id }}">Image</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-cat-manage-category-products="{{ c.id }}">Products</button>
+                            <button type="button" class="btn btn-danger btn-sm" data-confirm-post="/admin/category/delete/{{ c.id }}/" data-confirm-title="Delete {{ c.name }}?">Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    {% empty %}
+                      <tr><td colspan="3" class="text-muted" style="text-align:center;padding:16px">No categories</td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bundles tab -->
+          <div class="tab-panel" data-panel="cat-tab-bundles">
+            <div class="form-grid">
+              <div class="form-card">
+                <h3><span class="form-icon">BU</span>New Bundle</h3>
+                <form id="cat-f-create-bundle" class="field-group" data-cat-ajax data-cat-success="Bundle added." action="/admin/bundle/add/" method="post">
+                  {% csrf_token %}
+                  <label>Bundle Name <input type="text" name="name" required></label>
+                  <label>Price (Rs.) <input name="price" type="number" step="1" required></label>
+                  <label>Old Price (Rs.) <input name="old_price" type="number" step="1"></label>
+                  <label>Items (comma separated) <input type="text" name="items"></label>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Bundle</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="form-card">
+                <h3><span class="form-icon">LB</span>Bundles ({{ shop_bundles|length }})</h3>
+                <div class="table-wrapper" style="max-height:420px;overflow-y:auto">
+                  <table class="data-table">
+                    <thead><tr><th></th><th>Name</th><th>Items</th><th>Price</th><th>Old Price</th><th>Save</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    {% for b in shop_bundles %}
+                      <tr>
+                        <td><img src="{{ b.image|default:'/static/images/placeholder.jpg' }}" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;display:block"></td>
+                        <td>{{ b.name }}</td>
+                        <td>{{ b.items|truncatewords:8 }}</td>
+                        <td class="num">Rs.{{ b.price }}</td>
+                        <td class="num">Rs.{{ b.old_price }}</td>
+                        <td class="num">{{ b.save_percent }}%</td>
+                        <td>
+                          <div class="cat-row-actions">
+                            <button type="button" class="btn btn-secondary btn-sm" data-cat-edit-bundle="{{ b.id }}">Edit</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-cat-upload-bundle-image="{{ b.id }}">Image</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-cat-manage-bundle-products="{{ b.id }}">Products</button>
+                            <button type="button" class="btn btn-danger btn-sm" data-confirm-post="/admin/bundle/delete/{{ b.id }}/" data-confirm-title="Delete {{ b.name }}?">Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    {% empty %}
+                      <tr><td colspan="7" class="text-muted" style="text-align:center;padding:16px">No bundles</td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+      {% endif %}
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: OPENING BALANCES
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="opening-balances">
+        <div class="section-header">
+          <div>
+            <h2>Opening Balances</h2>
+            <p>Post opening payable, advance, and cash/bank account balances for migration from legacy books</p>
+          </div>
+        </div>
+        <div class="form-grid">
+          {% if can.supplier_invoice_post %}
+          <div class="form-card">
+            <h3><span class="form-icon">OP</span>Supplier Opening Payable</h3>
+            <form id="f-supplier-opening-payable" class="field-group">
+              <label>Supplier
+                <select name="supplier" required>
+                  <option value="">- select supplier -</option>
+                  {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Opening Payable Amount (PKR)
+                <input name="amount" type="number" step="0.01" min="0.01" required placeholder="0.00">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Opening Payable</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+
+          {% if can.supplier_advance_post %}
+          <div class="form-card">
+            <h3><span class="form-icon">OA</span>Supplier Opening Advance</h3>
+            <form id="f-supplier-opening-advance" class="field-group">
+              <label>Supplier
+                <select name="supplier" required>
+                  <option value="">- select supplier -</option>
+                  {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Opening Advance Amount (PKR)
+                <input name="amount" type="number" step="0.01" min="0.01" required placeholder="0.00">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Opening Advance</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+
+          {% if can.supplier_payment_post %}
+          <div class="form-card">
+            <h3><span class="form-icon">CB</span>Cash / Bank Opening Balance</h3>
+            <form id="f-cash-opening" class="field-group">
+              <label>Account
+                <select name="account" required>
+                  <option value="">- select account -</option>
+                  {% for a in cash_bank_accounts %}<option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Opening Balance (PKR)
+                <input name="amount" type="number" step="0.01" required placeholder="0.00">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Opening Balance</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: DIRECT PURCHASE / GRN
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="purchase">
+        <div class="section-header">
+          <div>
+            <h2>Direct Purchase &amp; GRN</h2>
+            <p>Create goods receipt notes directly from supplier delivery - single-line entry</p>
+          </div>
+        </div>
+
+        {% if can.grn_create %}
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>New Direct Purchase GRN</h2>
+              <p>All fields required. Rejected quantity defaults to 0.</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <form id="f-direct-purchase" class="field-group">
+              <div class="form-grid">
+                <label>Supplier
+                  <select name="supplier" required>
+                    <option value="">- select supplier -</option>
+                    {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Warehouse
+                  <select name="warehouse" required>
+                    <option value="">- select warehouse -</option>
+                    {% for w in warehouses %}<option value="{{ w.id }}">{{ w.code }} - {{ w.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Product (Raw Material)
+                  <select name="product" required>
+                    <option value="">- select raw product -</option>
+                    {% for p in raw_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Batch Number
+                  <input name="batch_number" required placeholder="e.g. TRM-2026-001">
+                </label>
+                <label>Expiry Date <span>Leave blank if none</span>
+                  <input name="expiry_date" type="date">
+                </label>
+                <label>Ordered Quantity
+                  <input name="ordered_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+                </label>
+                <label>Received Quantity
+                  <input name="received_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+                </label>
+                <label>Accepted Quantity
+                  <input name="accepted_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+                </label>
+                <label>Rejected Quantity
+                  <input name="rejected_quantity" type="number" step="0.001" min="0" value="0">
+                </label>
+                <label>Unit Cost (PKR)
+                  <input name="unit_cost" type="number" step="0.0001" min="0.0001" required placeholder="0.0000">
+                  <span>Compared with the active supplier agreement at posting.</span>
+                </label>
+                {% if can.supplier_rate_override %}<label>Rate Override Reason <span>Required when rate exceeds agreement tolerance</span><input name="rate_override_reason" type="text"></label>{% endif %}
+              </div>
+              <div class="form-actions">
+                <button type="reset" class="btn btn-secondary">Clear</button>
+                <button type="submit" class="btn btn-primary">Create GRN</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info"><strong>Restricted:</strong> You do not have permission to create GRNs.</div>
+        {% endif %}
+
+        <!-- Pending GRNs table -->
+        {% if pending_grns %}
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header">
+            <div><h2>Pending GRNs</h2><p>Awaiting quality inspection or approval</p></div>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Number</th><th>Supplier</th><th>Date</th><th>Status</th><th>Payable Amount</th></tr></thead>
+              <tbody>
+              {% for g in pending_grns %}
+                <tr>
+                  <td class="mono">{{ g.number }}</td>
+                  <td>{{ g.supplier__code }} - {{ g.supplier__name }}</td>
+                  <td>{{ g.grn_date }}</td>
+                  <td><span class="badge badge-{{ g.status }}">{{ g.status }}</span></td>
+                  <td class="num">{{ g.payable_amount|floatformat:2 }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: QUALITY & GRN APPROVAL
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="quality">
+        <div class="section-header">
+          <div>
+            <h2>Quality Inspection &amp; GRN Approval</h2>
+            <p>Post quality deductions and approve GRNs to commit stock and create invoices</p>
+          </div>
+        </div>
+        <div class="form-grid">
+          {% if can.quality_inspect %}
+          <div class="form-card">
+            <h3><span class="form-icon">QA</span>Quality Inspection</h3>
+            <form id="f-quality-inspect" class="field-group">
+              <label>GRN
+                <select name="grn_id" required>
+                  <option value="">- select GRN -</option>
+                  {% for g in pending_grns %}
+                    <option value="{{ g.id }}">{{ g.number }} - {{ g.supplier__code }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Quality Deduction Amount (PKR) <span>Enter 0 if no deduction</span>
+                <input name="deduction_amount" type="number" step="0.01" min="0" value="0">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Inspection</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+
+          {% if can.grn_approve %}
+          <div class="form-card">
+            <h3><span class="form-icon">AG</span>Approve GRN</h3>
+            <form id="f-approve-grn" class="field-group">
+              <label>GRN
+                <select name="grn_id" required>
+                  <option value="">- select GRN -</option>
+                  {% for g in pending_grns %}
+                    <option value="{{ g.id }}">{{ g.number }} - {{ g.supplier__code }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Receive Into Warehouse
+                <select name="warehouse" required>
+                  <option value="">- select warehouse -</option>
+                  {% for w in warehouses %}<option value="{{ w.id }}">{{ w.code }} - {{ w.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <div class="alert alert-info" style="margin:0">
+                <strong>Posting effect:</strong> Approving will receive stock into inventory and auto-create a supplier invoice.
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Approve GRN</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: GRINDING / PRODUCTION
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="grinding">
+        <div class="section-header">
+          <div>
+            <h2>Grinding &amp; Production</h2>
+            <p>Issue raw material to grinding and receive powder output back into stock</p>
+          </div>
+        </div>
+        <div class="form-grid">
+          {% if can.stock_issue %}
+          <div class="form-card">
+            <h3><span class="form-icon">IG</span>Issue Raw to Grinding</h3>
+            <form id="f-issue-grinding" class="field-group">
+              <label>Raw Material Batch
+                <select name="raw_batch" required>
+                  <option value="">- select batch -</option>
+                  {% for b in raw_batches %}
+                    <option value="{{ b.id }}">{{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:3 }} | Exp: {{ b.expiry_date|default:"-" }} | {{ b.stock_state }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Output Powder Product
+                <select name="powder_product" required>
+                  <option value="">- select powder product -</option>
+                  {% for p in powder_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Issued Quantity (kg)
+                <input name="issued_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+              </label>
+              <label>Expected Output Quantity (kg)
+                <input name="expected_output_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Issue to Grinding</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+
+          {% if can.production_post %}
+          <div class="form-card">
+            <h3><span class="form-icon">PO</span>Receive Powder Output</h3>
+            <form id="f-receive-powder" class="field-group">
+              <label>Production Order
+                <select name="production_order" required>
+                  <option value="">- select production order -</option>
+                  {% for o in open_production_orders %}
+                    <option value="{{ o.id }}">{{ o.number }} | {{ o.powder_product__code }} | Expected: {{ o.expected_output_quantity|floatformat:3 }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Actual Output Quantity (kg)
+                <input name="actual_output_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+              </label>
+              <label>Wastage Quantity (kg)
+                <input name="wastage_quantity" type="number" step="0.001" min="0" value="0">
+              </label>
+              <label>Powder Batch Number
+                <input name="powder_batch_number" required placeholder="e.g. PWD-2026-001">
+              </label>
+              <label>Expiry Date <span>Leave blank if none</span>
+                <input name="expiry_date" type="date">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Receive Powder</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+
+          <!-- Open production orders -->
+          {% if open_production_orders %}
+          <div class="form-card" style="grid-column:1/-1">
+            <h3><span class="form-icon">OP</span>Open Production Orders</h3>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>Order</th><th>Raw Batch</th><th>Output Product</th><th>Issued</th><th>Expected</th><th>Status</th></tr></thead>
+                <tbody>
+                {% for o in open_production_orders %}
+                  <tr>
+                    <td class="mono">{{ o.number }}</td>
+                    <td class="mono">{{ o.raw_batch__batch_number }}</td>
+                    <td>{{ o.powder_product__code }}</td>
+                    <td class="num">{{ o.issued_quantity|floatformat:3 }}</td>
+                    <td class="num">{{ o.expected_output_quantity|floatformat:3 }}</td>
+                    <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: PACKING
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="packing">
+        <div class="section-header">
+          <div>
+            <h2>Packing</h2>
+            <p>Complete packing orders using powder and packaging materials to create finished goods stock</p>
+          </div>
+        </div>
+
+        {% if can.packing_post %}
+        <div class="form-grid">
+          <div class="form-card" style="grid-column:1/-1">
+            <h3><span class="form-icon">PK</span>Complete Packing Order</h3>
+            <form id="f-complete-packing" class="field-group">
+              <div class="form-grid">
+                <label>Packaging BOM
+                  <select name="bom" required>
+                    <option value="">- select BOM -</option>
+                    {% for b in boms %}
+                      <option value="{{ b.id }}">{{ b.finished_product__code }} v{{ b.version }} | Powder: {{ b.powder_product__code }}</option>
+                    {% endfor %}
+                  </select>
+                </label>
+                <label>Powder Batch
+                  <select name="powder_batch" required>
+                    <option value="">- select powder batch -</option>
+                    {% for b in powder_batches %}
+                      <option value="{{ b.id }}">{{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:3 }} available</option>
+                    {% endfor %}
+                  </select>
+                </label>
+                <label>Completed Units
+                  <input name="completed_units" type="number" step="0.001" min="1" required placeholder="0">
+                </label>
+                <label>Packing wastage units
+                  <input name="wastage_units" type="number" step="0.001" min="0" value="0">
+                </label>
+                <label>Finished Batch Number
+                  <input name="finished_batch_number" required placeholder="e.g. FIN-2026-001">
+                </label>
+                <label>Packaging Material Product <span>Primary packaging</span>
+                  <select name="packaging_product">
+                    <option value="">- optional -</option>
+                    {% for p in packaging_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Packaging Material Batch
+                  <select name="packaging_batch">
+                    <option value="">- optional -</option>
+                    {% for b in packaging_batches %}
+                      <option value="{{ b.id }}">{{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:0 }} units</option>
+                    {% endfor %}
+                  </select>
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="reset" class="btn btn-secondary">Clear</button>
+                <button type="submit" class="btn btn-primary">Complete Packing</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info"><strong>Restricted:</strong> You do not have permission to post packing orders.</div>
+        {% endif %}
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: PAYABLES
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="payables">
+        <div class="section-header">
+          <div>
+            <h2>Payables</h2>
+            <p>Post advance payments, invoice payments, advance adjustments, and payment reversals</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="tab-bar" role="tablist">
+            <button class="tab-button active" data-tab="tab-advance" role="tab">Advance Payment</button>
+            <button class="tab-button" data-tab="tab-pay-invoice" role="tab">Pay Invoice</button>
+            <button class="tab-button" data-tab="tab-adj-advance" role="tab">Adjust Advance</button>
+            <button class="tab-button" data-tab="tab-reversal" role="tab">Reverse Payment</button>
+            <button class="tab-button" data-tab="tab-print-receipt" role="tab">Print Receipt</button>
+          </div>
+
+          <!-- Advance -->
+          <div class="tab-panel active" data-panel="tab-advance">
+            {% if can.supplier_advance_post %}
+            <form id="f-supplier-advance" class="field-group">
+              <div class="form-grid">
+                <label>Supplier
+                  <select name="supplier" required>
+                    <option value="">- select supplier -</option>
+                    {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }} (Advance: {{ s.advance_balance|floatformat:0 }})</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Cash / Bank Account
+                  <select name="cash_bank_account" required>
+                    <option value="">- select account -</option>
+                    {% for a in cash_bank_accounts %}<option value="{{ a.id }}">{{ a.code }} - {{ a.name }} (Bal: {{ a.balance|floatformat:0 }})</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Amount (PKR)
+                  <input name="amount" type="number" step="0.01" min="0.01" required placeholder="0.00">
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Advance</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Advance posting requires supplier_advance.post permission.</div>
+            {% endif %}
+          </div>
+
+          <!-- Pay invoice -->
+          <div class="tab-panel" data-panel="tab-pay-invoice">
+            {% if can.supplier_payment_post %}
+            <form id="f-pay-invoice" class="field-group">
+              <div class="form-grid">
+                <label>Supplier
+                  <select id="pay-invoice-supplier" name="supplier" required>
+                    <option value="">- select supplier -</option>
+                    {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Invoice
+                  <select id="pay-invoice-invoice" name="invoice" required>
+                    <option value="">- select supplier first -</option>
+                    {% for inv in open_invoices %}
+                      <option value="{{ inv.id }}">{{ inv.number }} - {{ inv.amount|floatformat:2 }} ({{ inv.status }})</option>
+                    {% endfor %}
+                  </select>
+                </label>
+                <label>Cash / Bank Account
+                  <select name="cash_bank_account" required>
+                    <option value="">- select account -</option>
+                    {% for a in cash_bank_accounts %}<option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Payment Amount (PKR)
+                  <input name="amount" type="number" step="0.01" min="0.01" required placeholder="0.00">
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Payment</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Payment posting requires supplier_payment.post permission.</div>
+            {% endif %}
+          </div>
+
+          <!-- Adjust advance -->
+          <div class="tab-panel" data-panel="tab-adj-advance">
+            {% if can.supplier_advance_adjust %}
+            <form id="f-adjust-advance" class="field-group">
+              <div class="form-grid">
+                <label>Supplier
+                  <select id="adj-advance-supplier" name="supplier" required>
+                    <option value="">- select supplier -</option>
+                    {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }} (Advance: {{ s.advance_balance|floatformat:0 }})</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Invoice (to adjust against)
+                  <select id="adj-advance-invoice" name="invoice" required>
+                    <option value="">- select supplier first -</option>
+                  </select>
+                </label>
+                <label>Adjustment Amount (PKR)
+                  <input name="amount" type="number" step="0.01" min="0.01" required placeholder="0.00">
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Adjust Advance</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Advance adjustment requires supplier_advance.adjust permission.</div>
+            {% endif %}
+          </div>
+
+          <!-- Reverse payment -->
+          <div class="tab-panel" data-panel="tab-reversal">
+            {% if can.supplier_payment_reverse %}
+            <form id="f-reverse-payment" class="field-group">
+              <div class="form-grid">
+                <label>Filter by Supplier <span>Narrows the payment list</span>
+                  <select id="reverse-payment-supplier">
+                    <option value="">- all suppliers -</option>
+                    {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Payment to Reverse
+                  <select id="reverse-payment-id" name="payment_id" required>
+                    <option value="">- select supplier to load payments -</option>
+                  </select>
+                </label>
+                <label>Reversal Reason
+                  <input name="reason" required placeholder="Enter reason for reversal">
+                </label>
+              </div>
+              <div class="alert alert-warning" style="margin:0">
+                <strong>Warning:</strong> Payment reversal restores all balances and cannot be undone.
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Reverse Payment</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Payment reversal requires supplier_payment.reverse permission.</div>
+            {% endif %}
+          </div>
+
+          <!-- Print receipt -->
+          <div class="tab-panel" data-panel="tab-print-receipt">
+            {% if can.view_financial_data %}
+            <form id="f-print-receipt" class="field-group" style="max-width:400px">
+              <label>Select Payment
+                <select name="payment_id_print" required>
+                  <option value="">- select payment to print -</option>
+                  <!-- populated dynamically by supplier filter or show recent -->
+                  {% for inv in open_invoices %}
+                    <option value="{{ inv.id }}">{{ inv.number }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <div class="field-hint">The receipt will open in a new tab and can be printed or saved as PDF.</div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-secondary">Open Printable Receipt</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Financial read permission required.</div>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: ADJUSTMENTS (DEBIT / CREDIT NOTES)
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="adjustments">
+        <div class="section-header">
+          <div>
+            <h2>Financial Adjustments</h2>
+            <p>Post debit notes and credit notes against supplier payable balances</p>
+          </div>
+        </div>
+        <div class="form-grid">
+          {% if can.supplier_invoice_post %}
+          <div class="form-card">
+            <h3><span class="form-icon">DN</span>Debit Note</h3>
+            <p class="text-sm text-muted" style="margin-bottom:12px">Reduces supplier payable (e.g. quality claim, shortage deduction)</p>
+            <form id="f-debit-note" class="field-group">
+              <label>Supplier
+                <select id="debit-note-supplier" name="supplier" required>
+                  <option value="">- select supplier -</option>
+                  {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Against Invoice <span>Optional</span>
+                <select id="debit-note-invoice" name="invoice">
+                  <option value="">- select supplier first -</option>
+                </select>
+              </label>
+              <label>Amount (PKR)
+                <input name="amount" type="number" step="0.01" min="0.01" required placeholder="0.00">
+              </label>
+              <label>Reason
+                <input name="reason" required placeholder="Quality deduction / shortage">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Debit Note</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="form-card">
+            <h3><span class="form-icon">CN</span>Credit Note</h3>
+            <p class="text-sm text-muted" style="margin-bottom:12px">Balance effect depends on the credit note nature - select carefully</p>
+            <form id="f-credit-note" class="field-group">
+              <label>Supplier
+                <select id="credit-note-supplier" name="supplier" required>
+                  <option value="">- select supplier -</option>
+                  {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Against Invoice <span>Optional</span>
+                <select id="credit-note-invoice" name="invoice">
+                  <option value="">- select supplier first -</option>
+                </select>
+              </label>
+              <label>Balance Effect
+                <select name="balance_effect" required>
+                  <option value="">- select effect -</option>
+                  <option value="decrease_payable">Decrease Payable</option>
+                  <option value="increase_payable">Increase Payable</option>
+                  <option value="increase_advance">Increase Advance</option>
+                  <option value="decrease_advance">Decrease Advance</option>
+                  <option value="supplier_refund_due">Supplier Refund Due</option>
+                  <option value="supplier_replacement_due">Supplier Replacement Due</option>
+                  <option value="informational_only">Informational Only</option>
+                </select>
+              </label>
+              <label>Amount (PKR)
+                <input name="amount" type="number" step="0.01" min="0.01" required placeholder="0.00">
+              </label>
+              <label>Reason
+                <input name="reason" required placeholder="Price correction / overpayment">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Credit Note</button>
+              </div>
+            </form>
+          </div>
+          {% else %}
+          <div class="alert alert-info"><strong>Restricted:</strong> Posting adjustments requires supplier_invoice.post permission.</div>
+          {% endif %}
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: STOCK OPERATIONS
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="stock">
+        <div class="section-header">
+          <div>
+            <h2>Stock Operations</h2>
+            <p>Physical count, adjustments, supplier returns, repacking, relabeling, and rework</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="tab-bar" role="tablist">
+            <button class="tab-button active" data-tab="tab-stock-adj" role="tab">Stock Adjustment</button>
+            <button class="tab-button" data-tab="tab-phys-count" role="tab">Physical Count</button>
+            <button class="tab-button" data-tab="tab-sup-return" role="tab">Supplier Return</button>
+            <button class="tab-button" data-tab="tab-repack" role="tab">Repacking</button>
+            <button class="tab-button" data-tab="tab-relabel" role="tab">Relabeling</button>
+            <button class="tab-button" data-tab="tab-rework" role="tab">Rework</button>
+          </div>
+
+          <!-- Stock adjustment -->
+          <div class="tab-panel active" data-panel="tab-stock-adj">
+            {% if can.stock_adjust %}
+            <form id="f-stock-adjustment" class="field-group" style="max-width:560px">
+              <label>Batch to Adjust
+                <select name="batch_id" required>
+                  <option value="">- select batch -</option>
+                  {% for b in raw_batches %}
+                    <option value="{{ b.id }}">[RAW] {{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:3 }}</option>
+                  {% endfor %}
+                  {% for b in powder_batches %}
+                    <option value="{{ b.id }}">[PWD] {{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:3 }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Counted Quantity (actual physical count)
+                <input name="counted_quantity" type="number" step="0.001" min="0" required placeholder="0.000">
+              </label>
+              <label>Reason
+                <input name="reason" required placeholder="Annual stock count / cycle count">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Adjustment</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Stock adjustment requires stock.adjust permission.</div>
+            {% endif %}
+          </div>
+
+          <!-- Physical count -->
+          <div class="tab-panel" data-panel="tab-phys-count">
+            {% if can.stock_adjust %}
+            <form id="f-physical-count" class="field-group" style="max-width:560px">
+              <label>Batch
+                <select name="batch_id" required>
+                  <option value="">- select batch -</option>
+                  {% for b in raw_batches %}
+                    <option value="{{ b.id }}">[RAW] {{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:3 }}</option>
+                  {% endfor %}
+                  {% for b in powder_batches %}
+                    <option value="{{ b.id }}">[PWD] {{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:3 }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Physical Count Quantity
+                <input name="counted_quantity" type="number" step="0.001" min="0" required placeholder="0.000">
+              </label>
+              <label>Counter Name / Reference
+                <input name="reason" required placeholder="Counted by: [Name], Ref: PC-2026-001">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Physical Count</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Stock adjust permission required.</div>
+            {% endif %}
+          </div>
+
+          <!-- Supplier return -->
+          <div class="tab-panel" data-panel="tab-sup-return">
+            {% if can.stock_adjust %}
+            <form id="f-supplier-return" class="field-group" style="max-width:560px">
+              <label>Batch to Return
+                <select name="batch_id" required>
+                  <option value="">- select batch -</option>
+                  {% for b in raw_batches %}
+                    <option value="{{ b.id }}">{{ b.batch_number }} | {{ b.product__code }} | {{ b.supplier__code }} | {{ b.quantity_on_hand|floatformat:3 }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Against Invoice <span>Optional</span>
+                <select name="invoice">
+                  <option value="">- no invoice -</option>
+                  {% for inv in open_invoices %}<option value="{{ inv.id }}">{{ inv.number }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Return Quantity
+                <input name="quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+              </label>
+              <label>Return Amount (PKR)
+                <input name="amount" type="number" step="0.01" min="0" value="0">
+              </label>
+              <label>Reason
+                <input name="reason" required placeholder="Quality rejection / wrong item">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Supplier Return</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Stock adjust permission required.</div>
+            {% endif %}
+          </div>
+
+          <!-- Repacking -->
+          <div class="tab-panel" data-panel="tab-repack">
+            {% if can.packing_post %}
+            <form id="f-repack" class="field-group" style="max-width:560px">
+              <label>Source Batch
+                <select name="batch_id" required>
+                  <option value="">- select source batch -</option>
+                  {% for b in raw_batches %}
+                    <option value="{{ b.id }}">[RAW] {{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:3 }}</option>
+                  {% endfor %}
+                  {% for b in powder_batches %}
+                    <option value="{{ b.id }}">[PWD] {{ b.batch_number }} | {{ b.product__code }} | {{ b.quantity_on_hand|floatformat:3 }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Finished / Output Product
+                <select name="finished_product" required>
+                  <option value="">- select -</option>
+                  {% for p in finished_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Repack Quantity
+                <input name="quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+              </label>
+              <label>Loss Quantity
+                <input name="loss_quantity" type="number" step="0.001" min="0" value="0">
+              </label>
+              <label>New Batch Number
+                <input name="new_batch_number" required placeholder="e.g. RPK-2026-001">
+              </label>
+              <label>Reason
+                <input name="reason" required placeholder="Repacking reason">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Repacking</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Packing post permission required.</div>
+            {% endif %}
+          </div>
+
+          <!-- Relabeling -->
+          <div class="tab-panel" data-panel="tab-relabel">
+            {% if can.packing_post %}
+            <form id="f-relabel" class="field-group" style="max-width:560px">
+              <label>Batch to Relabel
+                <select name="batch_id" required>
+                  <option value="">- select batch -</option>
+                  {% for b in raw_batches %}
+                    <option value="{{ b.id }}">[RAW] {{ b.batch_number }} | {{ b.product__code }}</option>
+                  {% endfor %}
+                  {% for b in powder_batches %}
+                    <option value="{{ b.id }}">[PWD] {{ b.batch_number }} | {{ b.product__code }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>New Label Version
+                <input name="new_label_version" required placeholder="e.g. v2 / Label-2026-R1">
+              </label>
+              <label>Reason
+                <input name="reason" required placeholder="Label update / regulatory change">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Relabeling</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Packing post permission required.</div>
+            {% endif %}
+          </div>
+
+          <!-- Rework -->
+          <div class="tab-panel" data-panel="tab-rework">
+            {% if can.packing_post %}
+            <form id="f-rework" class="field-group" style="max-width:560px">
+              <label>Source Batch
+                <select name="batch_id" required>
+                  <option value="">- select source batch -</option>
+                  {% for b in raw_batches %}
+                    <option value="{{ b.id }}">[RAW] {{ b.batch_number }} | {{ b.product__code }}</option>
+                  {% endfor %}
+                  {% for b in powder_batches %}
+                    <option value="{{ b.id }}">[PWD] {{ b.batch_number }} | {{ b.product__code }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>Output Product
+                <select name="output_product" required>
+                  <option value="">- select -</option>
+                  {% for p in all_products %}<option value="{{ p.id }}">{{ p.product_type|upper }} | {{ p.code }} - {{ p.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Input Quantity
+                <input name="input_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+              </label>
+              <label>Output Quantity
+                <input name="output_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+              </label>
+              <label>Output Batch Number
+                <input name="output_batch_number" required placeholder="e.g. RWK-2026-001">
+              </label>
+              <label>Reason
+                <input name="reason" required placeholder="Rework reason">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Rework</button>
+              </div>
+            </form>
+            {% else %}
+            <div class="alert alert-info"><strong>Restricted:</strong> Packing post permission required.</div>
+            {% endif %}
+          </div>
+
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: REPORTS
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="reports">
+        <div class="section-header">
+          <div>
+            <h2>Reports</h2>
+            <p>Run operational reports inline or export to CSV - powered by the same reconciled backend</p>
+          </div>
+          <button id="btn-export-csv" class="btn btn-secondary btn-sm" style="display:none">Export CSV</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Report Filter</h2>
+              <p>Select a report, set filters, and run</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <form id="f-report" class="field-group">
+              <div class="form-grid">
+                <label>Report
+                  <select name="report_name" required>
+                    <option value="">- select report -</option>
+                    {% if can.financial_reports %}
+                    <optgroup label="Financial Reports">
+                      <option value="supplier-ledger">Supplier Ledger</option>
+                      <option value="supplier-aging">Supplier Aging</option>
+                      <option value="supplier-balance">Supplier Balance Summary</option>
+                      <option value="purchase">Purchase History</option>
+                      <option value="grn">GRN Report</option>
+                      <option value="payment-reversal">Payment Reversals</option>
+                      <option value="debit-note">Debit Notes</option>
+                      <option value="credit-note">Credit Notes</option>
+                      <option value="opening-balance">Opening Balances</option>
+                      <option value="supplier-advance-report">Supplier Advance Report</option>
+                      <option value="approval-pending">Approval Pending</option>
+                      <option value="user-activity">User Activity</option>
+                    </optgroup>
+                    {% endif %}
+                    {% if can.inventory_reports %}
+                    <optgroup label="Inventory Reports">
+                      <option value="raw-stock">Raw Material Stock</option>
+                      <option value="powder-stock">Powder Stock</option>
+                      <option value="packaging-stock">Packaging Stock</option>
+                      <option value="finished-stock">Finished Goods Stock</option>
+                      <option value="low-stock">Low Stock / Reorder Alert</option>
+                      <option value="near-expiry">Near-Expiry Batches</option>
+                      <option value="expired-stock">Expired Stock</option>
+                      <option value="fefo-dispatch">FEFO Dispatch Plan</option>
+                      <option value="expiry">Full Expiry Report</option>
+                      <option value="batch-traceability">Batch Traceability</option>
+                      <option value="yield">Yield Report</option>
+                      <option value="costing">Costing Report</option>
+                      <option value="wastage">Wastage Report</option>
+                      <option value="packing">Packing Report</option>
+                      <option value="packaging-consumption">Packaging Consumption</option>
+                      <option value="quality-rejection">Quality Rejection</option>
+                      <option value="stock-adjustment">Stock Adjustments</option>
+                      <option value="supplier-return">Supplier Returns</option>
+                      <option value="supplier-rejection">Supplier Rejection Report</option>
+                      <option value="supplier-shortage">Supplier Shortage Report</option>
+                      <option value="supplier-yield">Supplier Yield Report</option>
+                      <option value="damaged-stock">Damaged Stock Report</option>
+                      <option value="repacking">Repacking Report</option>
+                      <option value="grinding">Grinding / Production Output</option>
+                      <option value="finished-sku-production">Finished SKU Production</option>
+                      <option value="batch-cost">Batch Cost Report</option>
+                      <option value="cost-variance">Cost Variance Report</option>
+                    </optgroup>
+                    {% endif %}
+                  </select>
+                </label>
+                <label>Date From
+                  <input name="date_from" type="date">
+                </label>
+                <label>Date To
+                  <input name="date_to" type="date">
+                </label>
+                <label>Supplier <span>For ledger / aging / purchase / GRN</span>
+                  <select name="supplier">
+                    <option value="">- all suppliers -</option>
+                    {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Warehouse <span>For stock reports</span>
+                  <select name="warehouse">
+                    <option value="">- all warehouses -</option>
+                    {% for w in warehouses %}<option value="{{ w.id }}">{{ w.code }} - {{ w.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Product <span>For FEFO dispatch</span>
+                  <select name="product">
+                    <option value="">- all products -</option>
+                    {% for p in all_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <div style="display:flex;align-items:flex-end;gap:16px;padding-bottom:2px">
+                  <label style="flex-direction:row;align-items:center;gap:8px;font-size:13px">
+                    <input type="checkbox" name="include_blocked"> Include blocked batches
+                  </label>
+                  <label style="flex-direction:row;align-items:center;gap:8px;font-size:13px">
+                    <input type="checkbox" name="include_expired"> Include expired batches
+                  </label>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="reset" class="btn btn-secondary">Clear Filters</button>
+                <button type="submit" class="btn btn-primary">Run Report</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="report-output" style="margin-top:16px">
+          <div class="empty-state">
+            <span class="empty-icon" aria-hidden="true">--</span>
+            <p>Select a report and click <strong>Run Report</strong> to view results here.</p>
+            <p class="text-muted">Results will appear inline. Use Export CSV to download.</p>
+          </div>
+        </div>
+      </section>
+
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: OPENING STOCK
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="opening-stock">
+        <div class="section-header">
+          <div>
+            <h2>Opening Stock</h2>
+            <p>Post initial stock balances for raw material, powder, packaging, and finished goods when migrating from legacy books</p>
+          </div>
+        </div>
+        {% if can.stock_adjust %}
+        <div class="panel">
+          <div class="panel-header">
+            <div><h2>Post Opening Stock Batch</h2><p>Each batch must have a unique batch number per product per warehouse.</p></div>
+          </div>
+          <div class="panel-body">
+            <form id="f-opening-stock" class="field-group">
+              <div class="form-grid">
+                <label>Product
+                  <select name="product" required>
+                    <option value="">- select product -</option>
+                    {% for p in all_products %}<option value="{{ p.id }}">[{{ p.product_type|upper }}] {{ p.code }} - {{ p.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Warehouse
+                  <select name="warehouse" required>
+                    <option value="">- select warehouse -</option>
+                    {% for w in warehouses %}<option value="{{ w.id }}">{{ w.code }} - {{ w.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Supplier <span>Optional - for raw material batches</span>
+                  <select name="supplier">
+                    <option value="">- no supplier -</option>
+                    {% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Batch Number
+                  <input name="batch_number" required placeholder="e.g. OB-TRM-001">
+                </label>
+                <label>Quantity
+                  <input name="quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+                </label>
+                <label>Unit Cost (PKR)
+                  <input name="unit_cost" type="number" step="0.0001" min="0" required placeholder="0.0000">
+                </label>
+                <label>Expiry Date <span>Leave blank if none</span>
+                  <input name="expiry_date" type="date">
+                </label>
+                <label>Manufacturing Date <span>Optional</span>
+                  <input name="manufacturing_date" type="date">
+                </label>
+                <label>Remarks
+                  <input name="remarks" value="Opening stock balance">
+                </label>
+              </div>
+              <div class="alert alert-info" style="margin-top:12px">
+                <strong>Batch identity:</strong> Each batch is uniquely identified by product + batch number + warehouse. Duplicate opening balances for the same batch are rejected.
+              </div>
+              <div class="form-actions">
+                <button type="reset" class="btn btn-secondary">Clear</button>
+                <button type="submit" class="btn btn-primary">Post Opening Stock</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info"><strong>Restricted:</strong> Opening stock requires stock.adjust permission.</div>
+        {% endif %}
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: RECIPE MANAGEMENT
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="recipes">
+        <div class="section-header">
+          <div>
+            <h2>Recipe / Formula Management</h2>
+            <p>Manage masala and mixed spice formulas with versioning and confidentiality controls</p>
+          </div>
+        </div>
+        {% if can.admin_configure %}
+        <div class="form-grid">
+          <div class="form-card" style="grid-column:1/-1">
+            <h3><span class="form-icon">RC</span>New Recipe</h3>
+            <form id="f-create-recipe" class="field-group">
+              <div class="form-grid">
+                <label>Recipe Code
+                  <input name="code" required maxlength="40" placeholder="RCP-GARAM-001">
+                </label>
+                <label>Recipe Name
+                  <input name="name" required maxlength="160" placeholder="Garam Masala Premium">
+                </label>
+                <label>Finished Product
+                  <select name="finished_product" required>
+                    <option value="">- select finished product -</option>
+                    {% for p in finished_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Standard Batch Size
+                  <input name="standard_batch_size" type="number" step="0.001" min="0.001" required placeholder="100.000">
+                </label>
+                <label>Batch Unit
+                  <select name="batch_unit" required>
+                    <option value="">- select unit -</option>
+                    {% for u in units %}<option value="{{ u.id }}">{{ u.code }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Effective Date
+                  <input name="effective_date" type="date" required>
+                </label>
+                <label>Version <span>Auto-increment per code</span>
+                  <input name="version" type="number" min="1" value="1">
+                </label>
+                <div style="display:flex;align-items:center;gap:8px;padding-top:20px">
+                  <label style="flex-direction:row;align-items:center;gap:8px">
+                    <input type="checkbox" name="is_confidential" checked> Mark as Confidential
+                  </label>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Recipe</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="alert alert-warning" style="margin-top:8px">
+          <strong>Recipe confidentiality:</strong> Confidential recipes are only visible to users with admin.configure or financial reports permission. Ingredients are hidden from general data-entry operators.
+        </div>
+        {% else %}
+        <div class="alert alert-info"><strong>Restricted:</strong> Recipe management requires admin.configure permission.</div>
+        {% endif %}
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           SECTION: PURCHASE REQUIREMENTS
+           ══════════════════════════════════════════════════════════════════ -->
+      <section id="requirements">
+        <div class="section-header">
+          <div>
+            <h2>Purchase Requirements</h2>
+            <p>Raise purchase demand notices before formal purchase orders - from low stock alerts, production planning, or owner instruction</p>
+          </div>
+        </div>
+        {% if can.purchase_create %}
+        <div class="form-grid">
+          <div class="form-card">
+            <h3><span class="form-icon">RQ</span>New Purchase Requirement</h3>
+            <form id="f-create-requirement" class="field-group">
+              <label>Product
+                <select name="product" required>
+                  <option value="">- select product -</option>
+                  {% for p in raw_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}
+                  {% for p in packaging_products %}<option value="{{ p.id }}">[PKG] {{ p.code }} - {{ p.name }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>Required Quantity
+                <input name="required_quantity" type="number" step="0.001" min="0.001" required placeholder="0.000">
+              </label>
+              <label>Required By Date
+                <input name="required_by_date" type="date">
+              </label>
+              <label>Source / Reason
+                <select name="source" required>
+                  <option value="manual">Manual Demand</option>
+                  <option value="low_stock">Low Stock Alert</option>
+                  <option value="production">Production Planning</option>
+                  <option value="seasonal">Seasonal Bulk Purchase</option>
+                  <option value="packaging">Packaging Shortage</option>
+                  <option value="owner">Owner / Director Instruction</option>
+                </select>
+              </label>
+              <label>Purpose / Notes
+                <input name="purpose" placeholder="Describe the requirement purpose">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Raise Requirement</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info"><strong>Restricted:</strong> Raising purchase requirements requires purchase.create permission.</div>
+        {% endif %}
+      </section>
+
+      <div class="divider"></div>
+
+      {% if can.supplier_rate_view %}
+      <section id="supplier-rates" aria-labelledby="supplier-rates-title">
+        <div class="section-header">
+          <div><h2 id="supplier-rates-title">Supplier Rate Agreements</h2><p>Approved commercial rates, validity windows, and purchase variance controls</p></div>
+          {% if can.supplier_rate_reports %}<a class="btn btn-secondary" href="/api/reports/supplier-rate-variance/?export=csv">Export Variance CSV</a>{% endif %}
+        </div>
+        <form method="get" action="#supplier-rates" class="filter-toolbar" aria-label="Filter supplier rate agreements">
+          <label>Supplier<select name="rate_supplier"><option value="">All suppliers</option>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}</select></label>
+          <label>Item<select name="rate_product"><option value="">All items</option>{% for p in all_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}</select></label>
+          <label>Item Type<select name="rate_item_type"><option value="">All types</option><option value="raw_spice">Raw spice</option><option value="packaging_material">Packaging material</option><option value="powder_product">Powder product</option><option value="service">Service</option></select></label>
+          <label>Status<select name="rate_status"><option value="">All statuses</option><option value="draft">Draft</option><option value="pending_approval">Pending approval</option><option value="approved">Approved</option><option value="active">Active</option><option value="expired">Expired</option><option value="superseded">Superseded</option><option value="cancelled">Cancelled</option></select></label>
+          <button class="btn btn-secondary" type="submit">Filter</button><a class="btn btn-secondary" href="/#supplier-rates">Clear</a>
+        </form>
+        {% if can.supplier_rate_create %}
+        <div class="form-card workflow-form">
+          <h3>Create Draft Agreement</h3>
+          <form id="f-supplier-rate" class="field-group" data-json-form data-endpoint="/api/supplier-price-agreements/">
+            <div class="compact-form-grid">
+              <label>Supplier<select name="supplier" required><option value="">Select supplier</option>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>{% endfor %}</select></label>
+              <label>Purchasable Item<select name="product" required><option value="">Select item</option>{% for p in raw_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}{% for p in packaging_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}{% for p in powder_products %}<option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>{% endfor %}</select></label>
+              <label>Agreed Rate<input name="agreed_rate" type="number" min="0.0001" step="0.0001" required></label>
+              <label>Unit<select name="unit" required><option value="">Select unit</option>{% for u in units %}<option value="{{ u.id }}">{{ u.code }} - {{ u.name }}</option>{% endfor %}</select></label>
+              <label>Effective Date<input name="effective_date" type="date" required></label>
+              <label>Expiry Date<input name="expiry_date" type="date" required></label>
+              <label>Rate Type<select name="rate_type"><option value="fixed">Fixed</option><option value="seasonal">Seasonal</option><option value="negotiated">Negotiated</option><option value="spot">Spot</option><option value="contract">Contract</option></select></label>
+              <label>Tolerance %<input name="tolerance_percentage" type="number" min="0" step="0.001" value="0"></label>
+              <label class="span-2">Remarks<textarea name="remarks" rows="2"></textarea></label>
+            </div>
+            <div class="form-actions"><button class="btn btn-primary" type="submit">Create Draft</button></div>
+          </form>
+        </div>
+        {% endif %}
+        <div class="panel table-panel">
+          <div class="table-wrapper"><table class="data-table"><thead><tr><th>Agreement</th><th>Supplier</th><th>Item</th><th class="num">Rate</th><th>Unit</th><th>Validity</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+          {% for item in supplier_rate_agreements %}<tr><td class="mono">{{ item.agreement_number }}</td><td>{{ item.supplier.code }} - {{ item.supplier.name }}</td><td>{{ item.product.code }} - {{ item.product.name }}</td><td class="num">{{ item.agreed_rate }}</td><td>{{ item.unit.code }}</td><td>{{ item.effective_date }} to {{ item.expiry_date }}</td><td><span class="badge badge-dot badge-{{ item.status }}">{{ item.get_status_display }}</span></td><td class="row-actions">{% if can.supplier_rate_create and item.status == 'draft' %}<details><summary class="btn btn-secondary btn-sm">Edit</summary><form class="inline-edit-form" data-json-form data-method="PATCH" data-endpoint="/api/supplier-price-agreements/{{ item.id }}/"><label>Agreed Rate<input name="agreed_rate" type="number" min="0.0001" step="0.0001" value="{{ item.agreed_rate }}" required></label><label>Effective Date<input name="effective_date" type="date" value="{{ item.effective_date|date:'Y-m-d' }}" required></label><label>Expiry Date<input name="expiry_date" type="date" value="{{ item.expiry_date|date:'Y-m-d' }}" required></label><label>Tolerance %<input name="tolerance_percentage" type="number" min="0" step="0.001" value="{{ item.tolerance_percentage }}"></label><label>Remarks<textarea name="remarks">{{ item.remarks }}</textarea></label><div class="form-actions"><button class="btn btn-primary btn-sm" type="submit">Save Draft</button></div></form></details><button class="btn btn-secondary btn-sm" data-confirm-post="/api/supplier-price-agreements/{{ item.id }}/submit/" data-confirm-title="Submit rate agreement">Submit</button>{% endif %}{% if can.supplier_rate_approve and item.status == 'pending_approval' %}<button class="btn btn-primary btn-sm" data-confirm-post="/api/supplier-price-agreements/{{ item.id }}/approve/" data-confirm-title="Approve rate agreement">Approve</button>{% elif can.supplier_rate_approve and item.status == 'approved' %}<button class="btn btn-primary btn-sm" data-confirm-post="/api/supplier-price-agreements/{{ item.id }}/activate/" data-confirm-title="Activate and supersede overlapping rates">Activate</button>{% endif %}</td></tr>{% empty %}<tr><td colspan="8"><div class="empty-state"><p>No supplier rate agreements match the current filters.</p></div></td></tr>{% endfor %}
+          </tbody></table></div>
+        </div>
+      </section>
+      <div class="divider"></div>
+      {% endif %}
+
+      {% if can.production_log_view %}
+      <section id="production-logs" aria-labelledby="production-logs-title">
+        <div class="section-header"><div><h2 id="production-logs-title">Daily / Shift Production Logs</h2><p>Lightweight operational logging linked to grinding and packing transactions</p></div>{% if can.production_log_reports %}<a class="btn btn-secondary" href="/api/reports/daily-production-log/?export=csv">Export Daily Log</a>{% endif %}</div>
+        <form method="get" action="#production-logs" class="filter-toolbar" aria-label="Filter production logs">
+          <label>From<input type="date" name="production_date_from" value="{{ request.GET.production_date_from }}"></label><label>To<input type="date" name="production_date_to" value="{{ request.GET.production_date_to }}"></label>
+          <label>Shift<select name="production_shift"><option value="">All shifts</option><option value="morning">Morning</option><option value="evening">Evening</option><option value="night">Night</option><option value="general">General</option><option value="custom">Custom</option></select></label>
+          <label>Operator<input name="production_operator" value="{{ request.GET.production_operator }}"></label>
+          <label>Production Order<select name="production_production_order"><option value="">All production orders</option>{% for o in open_production_orders %}<option value="{{ o.id }}">{{ o.number }}</option>{% endfor %}</select></label>
+          <label>Packing Order<select name="production_packing_order"><option value="">All packing orders</option>{% for o in recent_packing_orders %}<option value="{{ o.id }}">{{ o.number }}</option>{% endfor %}</select></label>
+          <label>Status<select name="production_status"><option value="">All statuses</option><option value="draft">Draft</option><option value="submitted">Submitted</option><option value="locked">Locked</option></select></label>
+          <button class="btn btn-secondary" type="submit">Filter</button><a class="btn btn-secondary" href="/#production-logs">Clear</a>
+        </form>
+        <div class="metric-grid compact-metrics"><article class="metric-card"><span>Today's Powder Output</span><strong>{{ metrics.today_powder_output|floatformat:3 }}</strong></article><article class="metric-card"><span>Today's Finished Units</span><strong>{{ metrics.today_finished_units|floatformat:0 }}</strong></article><article class="metric-card {% if metrics.today_downtime_minutes %}warning{% endif %}"><span>Today's Downtime</span><strong>{{ metrics.today_downtime_minutes }}</strong><span class="metric-sub">minutes</span></article></div>
+        {% if can.production_log_create %}
+        <div class="form-card workflow-form"><h3>Create Shift Log</h3><form id="f-production-log" class="field-group" data-json-form data-endpoint="/api/production-logs/"><input type="hidden" name="supervisor" value="{{ request.user.id }}"><div class="compact-form-grid">
+          <label>Log Date<input type="date" name="log_date" required></label><label>Shift<select name="shift"><option value="morning">Morning</option><option value="evening">Evening</option><option value="night">Night</option><option value="general">General</option><option value="custom">Custom</option></select></label>
+          <label>Production Order<select name="production_order"><option value="">Manual / none</option>{% for o in open_production_orders %}<option value="{{ o.id }}">{{ o.number }} - {{ o.powder_product__code }}</option>{% endfor %}</select></label><label>Packing Order<select name="packing_order"><option value="">None</option>{% for o in recent_packing_orders %}<option value="{{ o.id }}">{{ o.number }} - {{ o.bom.finished_product.code }}</option>{% endfor %}</select></label>
+          <label>Operator<input name="operator" autocomplete="name"></label><label>Machine<input name="machine"></label><label>Raw Issued<input name="raw_quantity_issued" type="number" min="0" step="0.001"></label><label>Powder Received<input name="powder_quantity_received" type="number" min="0" step="0.001"></label><label>Finished Packed<input name="finished_quantity_packed" type="number" min="0" step="0.001"></label><label>Grinding Wastage<input name="grinding_wastage_quantity" type="number" min="0" step="0.001"></label><label>Packing Wastage<input name="packing_wastage_quantity" type="number" min="0" step="0.001"></label><label>Downtime Minutes<input name="downtime_minutes" type="number" min="0" step="1"></label><label>Issue Category<select name="issue_category"><option value="none">None</option><option value="machine_issue">Machine issue</option><option value="labor_issue">Labor issue</option><option value="material_quality_issue">Material quality</option><option value="packaging_issue">Packaging issue</option><option value="power_issue">Power issue</option><option value="other">Other</option></select></label><label class="span-2">Remarks<textarea name="remarks" rows="2"></textarea></label>
+        </div><div class="form-actions"><button class="btn btn-primary" type="submit">Create Draft Log</button></div></form></div>
+        {% endif %}
+        <div class="panel table-panel"><div class="table-wrapper"><table class="data-table"><thead><tr><th>Date / Shift</th><th>Log</th><th>Operator</th><th class="num">Raw</th><th class="num">Powder</th><th class="num">Packed</th><th class="num">Yield</th><th class="num">Wastage</th><th>Issue / Downtime</th><th>Status</th><th>Actions</th></tr></thead><tbody>{% for item in production_logs %}<tr><td>{{ item.log_date }}<br><span class="muted">{{ item.get_shift_display }}</span></td><td class="mono">{{ item.log_number }}</td><td>{{ item.operator|default:'-' }}</td><td class="num">{{ item.raw_quantity_issued }}</td><td class="num">{{ item.powder_quantity_received }}</td><td class="num">{{ item.finished_quantity_packed }}</td><td class="num">{{ item.yield_percentage }}%</td><td class="num">{{ item.wastage_percentage }}%</td><td>{{ item.get_issue_category_display }} / {{ item.downtime_minutes }} min</td><td><span class="badge badge-dot badge-{{ item.status }}">{{ item.get_status_display }}</span></td><td class="row-actions">{% if can.production_log_submit and item.status == 'draft' %}<button class="btn btn-secondary btn-sm" data-confirm-post="/api/production-logs/{{ item.id }}/submit/" data-confirm-title="Submit production log">Submit</button>{% endif %}{% if can.production_log_approve and item.status == 'submitted' %}<button class="btn btn-primary btn-sm" data-confirm-post="/api/production-logs/{{ item.id }}/approve/" data-confirm-title="Approve and lock production log">Approve &amp; Lock</button>{% endif %}</td></tr>{% empty %}<tr><td colspan="11"><div class="empty-state"><p>No production logs match the current filters.</p></div></td></tr>{% endfor %}</tbody></table></div></div>
+      </section><div class="divider"></div>
+      {% endif %}
+
+      {% if can.customer_view %}
+      <section id="customers" aria-labelledby="customers-title">
+        <div class="section-header"><div><h2 id="customers-title">Customer / Distributor Master</h2><p>Sales-enablement records for future orders and delivery workflows</p></div>{% if can.customer_reports %}<a class="btn btn-secondary" href="/api/reports/customer-master/?export=csv">Export Master CSV</a>{% endif %}</div>
+        <form method="get" action="#customers" class="filter-toolbar" aria-label="Filter customers">
+          <label>Search<input name="customer_search" value="{{ request.GET.customer_search }}" placeholder="Code, business, contact or phone"></label>
+          <label>Type<select name="customer_type"><option value="">All types</option><option value="retailer">Retailer</option><option value="distributor">Distributor</option><option value="wholesaler">Wholesaler</option><option value="restaurant">Restaurant</option><option value="caterer">Caterer</option><option value="institution">Institution</option><option value="ecommerce">Ecommerce</option><option value="export_buyer">Export buyer</option><option value="walk_in">Walk in</option><option value="other">Other</option></select></label>
+          <label>Channel<select name="sales_channel"><option value="">All channels</option><option value="retail">Retail</option><option value="wholesale">Wholesale</option><option value="distributor">Distributor</option><option value="horeca">HORECA</option><option value="ecommerce">Ecommerce</option><option value="export">Export</option></select></label>
+          <label>City<input name="city" value="{{ request.GET.city }}"></label><label>Country<input name="country" value="{{ request.GET.country }}"></label>
+          <label>Status<select name="status"><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="blocked">Blocked</option></select></label>
+          <button class="btn btn-secondary" type="submit">Filter</button><a class="btn btn-secondary" href="/#customers">Clear</a>
+        </form>
+        {% if can.customer_create %}<div class="form-card workflow-form"><h3>Create Customer or Distributor</h3><form id="f-customer" class="field-group" data-json-form data-endpoint="/api/customers/"><div class="compact-form-grid"><label>Customer Code<input name="code" required autocomplete="off"></label><label>Business Name<input name="business_name" required autocomplete="organization"></label><label>Customer Type<select name="customer_type" required><option value="retailer">Retailer</option><option value="distributor">Distributor</option><option value="wholesaler">Wholesaler</option><option value="restaurant">Restaurant</option><option value="caterer">Caterer</option><option value="institution">Institution</option><option value="ecommerce">Ecommerce</option><option value="export_buyer">Export buyer</option><option value="walk_in">Walk in</option><option value="other">Other</option></select></label><label>Sales Channel<select name="sales_channel" required><option value="retail">Retail</option><option value="wholesale">Wholesale</option><option value="distributor">Distributor</option><option value="horeca">HORECA</option><option value="ecommerce">Ecommerce</option><option value="export">Export</option></select></label><label>Contact Person<input name="contact_person" autocomplete="name"></label><label>Phone<input name="phone" type="tel" autocomplete="tel"></label><label>Email<input name="email" type="email" autocomplete="email"></label><label>City<input name="city" autocomplete="address-level2"></label><label>Province / State<input name="province_state" autocomplete="address-level1"></label><label>Country<input name="country" value="Pakistan" autocomplete="country-name"></label><label>Tax / Registration<input name="tax_registration_number"></label><label>NTN / STRN<input name="local_tax_number"></label><label>Credit Days<input name="credit_days" type="number" min="0"></label><label>Credit Limit<input name="credit_limit" type="number" min="0" step="0.01"></label><label>Payment Terms<input name="payment_terms"></label><label>Preferred Price List<input name="preferred_price_list"></label><label class="span-2">Address<textarea name="address" rows="2" autocomplete="street-address"></textarea></label></div><div class="form-actions"><button class="btn btn-primary" type="submit">Create Customer</button></div></form></div>{% endif %}
+        <div class="panel table-panel"><div class="table-wrapper"><table class="data-table"><thead><tr><th>Code</th><th>Business</th><th>Type / Channel</th><th>Contact</th><th>Location</th><th class="num">Credit</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+          {% for item in customers %}<tr><td class="mono">{{ item.code }}</td><td><strong>{{ item.business_name }}</strong><details><summary>View details</summary><p>{{ item.email|default:'No email' }}<br>{{ item.address|default:'No address' }}<br>Tax: {{ item.tax_registration_number|default:'-' }} / {{ item.local_tax_number|default:'-' }}<br>Terms: {{ item.payment_terms|default:'-' }}</p></details></td><td>{{ item.get_customer_type_display }} / {{ item.get_sales_channel_display }}</td><td>{{ item.contact_person|default:'-' }}<br><span class="muted">{{ item.phone }}</span></td><td>{{ item.city|default:'-' }}, {{ item.country }}</td><td class="num">{{ item.credit_days|default:'-' }} days / {{ item.credit_limit|default:'-' }}</td><td><span class="badge badge-dot badge-{{ item.status }}">{{ item.get_status_display }}</span></td><td class="row-actions">{% if can.customer_edit %}<details><summary class="btn btn-secondary btn-sm">Edit</summary><form class="inline-edit-form" data-json-form data-method="PATCH" data-endpoint="/api/customers/{{ item.id }}/"><label>Business Name<input name="business_name" value="{{ item.business_name }}" required></label><label>Contact<input name="contact_person" value="{{ item.contact_person }}"></label><label>Phone<input name="phone" type="tel" value="{{ item.phone }}"></label><label>City<input name="city" value="{{ item.city }}"></label><label>Country<input name="country" value="{{ item.country }}"></label><div class="form-actions"><button class="btn btn-primary btn-sm" type="submit">Save</button></div></form></details>{% if item.status == 'inactive' %}<button class="btn btn-secondary btn-sm" data-confirm-post="/api/customers/{{ item.id }}/activate/" data-confirm-title="Activate customer">Activate</button>{% elif item.status == 'active' %}<button class="btn btn-secondary btn-sm" data-confirm-post="/api/customers/{{ item.id }}/deactivate/" data-confirm-title="Deactivate customer">Deactivate</button>{% endif %}{% endif %}{% if can.customer_block %}{% if item.status == 'blocked' %}<button class="btn btn-secondary btn-sm" data-confirm-post="/api/customers/{{ item.id }}/unblock/" data-confirm-title="Unblock customer">Unblock</button>{% else %}<button class="btn btn-danger btn-sm" data-confirm-post="/api/customers/{{ item.id }}/block/" data-confirm-title="Block customer">Block</button>{% endif %}{% endif %}</td></tr>{% empty %}<tr><td colspan="8"><div class="empty-state"><p>No customers match the current filters.</p></div></td></tr>{% endfor %}
+        </tbody></table></div></div>
+      </section><div class="divider"></div>
+      {% endif %}
+
+      {% if can.scheduled_task_view %}
+      <section id="scheduled-tasks" aria-labelledby="scheduled-tasks-title"><div class="section-header"><div><h2 id="scheduled-tasks-title">Scheduled Maintenance</h2><p>Logged, idempotent status refreshes; no stock or financial rows are deleted</p></div>{% if can.scheduled_task_reports %}<a class="btn btn-secondary" href="/api/reports/scheduled-task-log/?export=csv">Export Run Log</a>{% endif %}</div>
+      {% if can.scheduled_task_run %}<div class="action-toolbar" aria-label="Manual scheduled task controls"><button class="btn btn-secondary" data-confirm-post="/api/scheduled-task-logs/run-expiry-refresh/" data-confirm-title="Run expiry refresh">Refresh Expiry</button><button class="btn btn-secondary" data-confirm-post="/api/scheduled-task-logs/run-overdue-refresh/" data-confirm-title="Run overdue invoice refresh">Refresh Overdue</button><button class="btn btn-primary" data-confirm-post="/api/scheduled-task-logs/run-maintenance/" data-confirm-title="Run full scheduled maintenance">Run Maintenance</button></div>{% endif %}
+      <div class="panel table-panel"><div class="table-wrapper"><table class="data-table"><thead><tr><th>Job</th><th>Type</th><th>Started</th><th>Finished</th><th class="num">Duration</th><th>Status</th><th>Message / Error</th></tr></thead><tbody>{% for item in scheduled_task_logs %}<tr><td class="mono">{{ item.job_name }}</td><td>{{ item.get_job_type_display }}</td><td>{{ item.started_at }}</td><td>{{ item.finished_at|default:'-' }}</td><td class="num">{{ item.duration|default:'-' }}</td><td><span class="badge badge-dot badge-{{ item.status }}">{{ item.get_status_display }}</span></td><td>{{ item.message|default:item.error_details|truncatechars:120 }}</td></tr>{% empty %}<tr><td colspan="7"><div class="empty-state"><p>No scheduled task runs logged.</p></div></td></tr>{% endfor %}</tbody></table></div></div></section>
+      {% endif %}
+
+    </div><!-- /page-content -->
+  </main>
+</div><!-- /app-shell -->
+
+<!-- Toast -->
+<div id="toast" role="alert" aria-live="polite"></div>
+
+{% if can.admin_configure and user.is_staff %}
+<!-- ══════════════════════════════════════════════════════════════════════
+     STOREFRONT CATALOG MODALS (Edit Product / Edit Category / Edit Bundle /
+     Manage Category Products / Manage Bundle Products) — migrated from the
+     CMS admin dashboard. Driven by frontend/static/frontend/catalog-admin.js.
+     ══════════════════════════════════════════════════════════════════════ -->
+<div class="cat-modal-overlay" id="editProductModal">
+  <div class="cat-modal">
+    <div class="cat-modal-head"><h2>Edit Product</h2><button type="button" class="cat-modal-close" aria-label="Close" data-cat-close-modal="editProductModal">&times;</button></div>
+    <form method="post" id="editProductForm" class="field-group" data-cat-ajax data-cat-success="Product updated." enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="removed_variant_ids" id="ep_removed_variant_ids" value="">
+      <label>Product Name <input type="text" name="name" id="ep_name" required></label>
+      <label>Tagline <input type="text" name="tagline" id="ep_tagline"></label>
+      <label>Price (Rs.) <input name="price" type="number" step="1" id="ep_price" required></label>
+      <label>Old Price <input name="old_price" type="number" step="1" id="ep_old_price" value="0"></label>
+      <label>Replace Image <input type="file" name="file" accept="image/*"></label>
+      <label>Weight <input type="text" name="weight" id="ep_weight"></label>
+      <div class="form-actions" style="justify-content:space-between;align-items:center">
+        <span class="muted">Grammage Options</span>
+        <button type="button" class="btn btn-secondary btn-sm" data-cat-action="add-grammage-row" data-cat-target="ep_grammage">+ Add Grammage Option</button>
+      </div>
+      <div id="ep_grammage"></div>
+      <label>Category
+        <select name="category_id" id="ep_category">{% for c in shop_categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+      </label>
+      <label>Description <textarea name="description" id="ep_desc" rows="2"></textarea></label>
+      <label>Ingredients <textarea name="ingredients" id="ep_ing" rows="1"></textarea></label>
+      <label>Usage <textarea name="usage" id="ep_usage" rows="1"></textarea></label>
+      <div class="cat-inline-checks">
+        <label><input type="checkbox" id="ep_bs" name="best_seller" value="1"> Best Seller</label>
+        <label><input type="checkbox" id="ep_na" name="new_arrival" value="1"> New Arrival</label>
+        <label><input type="hidden" name="active" value="0"><input type="checkbox" id="ep_active" name="active" value="1"> Active</label>
+        <label><input type="hidden" name="featured" value="0"><input type="checkbox" id="ep_featured" name="featured" value="1"> Featured</label>
+      </div>
+      <div class="form-actions" style="justify-content:space-between;align-items:center">
+        <span class="muted">Sizes / Variants</span>
+        <button type="button" class="btn btn-secondary btn-sm" data-cat-action="add-variant-row">+ Add Size</button>
+      </div>
+      <div id="ep_variants"></div>
+      <div class="cat-modal-actions">
+        <button type="button" class="btn btn-secondary" data-cat-close-modal="editProductModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="cat-modal-overlay" id="editCatModal">
+  <div class="cat-modal cat-modal-sm">
+    <div class="cat-modal-head"><h2>Edit Category</h2><button type="button" class="cat-modal-close" aria-label="Close" data-cat-close-modal="editCatModal">&times;</button></div>
+    <form method="post" id="editCatForm" class="field-group" data-cat-ajax data-cat-success="Category updated.">
+      {% csrf_token %}
+      <label>Category Name <input type="text" name="name" id="ec_name" required></label>
+      <div class="cat-modal-actions">
+        <button type="button" class="btn btn-secondary" data-cat-close-modal="editCatModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="cat-modal-overlay" id="manageCatProductsModal">
+  <div class="cat-modal">
+    <div class="cat-modal-head"><h2>Manage Products in <span id="mcp_cat_name"></span></h2><button type="button" class="cat-modal-close" aria-label="Close" data-cat-close-modal="manageCatProductsModal">&times;</button></div>
+    <form method="post" id="manageCatProductsForm" data-cat-ajax data-cat-success="Category products updated.">
+      {% csrf_token %}
+      <p class="muted">Check products to include in this category, uncheck to remove.</p>
+      <div id="mcp_product_list" style="display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto;padding:4px 0"></div>
+      <div class="cat-modal-actions">
+        <button type="button" class="btn btn-secondary" data-cat-close-modal="manageCatProductsModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="cat-modal-overlay" id="editBundleModal">
+  <div class="cat-modal cat-modal-sm">
+    <div class="cat-modal-head"><h2>Edit Bundle</h2><button type="button" class="cat-modal-close" aria-label="Close" data-cat-close-modal="editBundleModal">&times;</button></div>
+    <form method="post" id="editBundleForm" class="field-group" data-cat-ajax data-cat-success="Bundle updated." enctype="multipart/form-data">
+      {% csrf_token %}
+      <label>Bundle Name <input type="text" name="name" id="eb_name" required></label>
+      <label>Items / Description <textarea name="items" id="eb_items" rows="2"></textarea></label>
+      <label>Price (Rs.) <input name="price" type="number" step="1" id="eb_price"></label>
+      <label>Old Price (Rs.) <input name="old_price" type="number" step="1" id="eb_old_price"></label>
+      <label>Replace Image <input type="file" name="file" accept="image/*"></label>
+      <div class="cat-modal-actions">
+        <button type="button" class="btn btn-secondary" data-cat-close-modal="editBundleModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="cat-modal-overlay" id="manageBundleProductsModal">
+  <div class="cat-modal">
+    <div class="cat-modal-head"><h2>Manage Products in <span id="mbp_bundle_name"></span></h2><button type="button" class="cat-modal-close" aria-label="Close" data-cat-close-modal="manageBundleProductsModal">&times;</button></div>
+    <form method="post" id="manageBundleProductsForm" data-cat-ajax data-cat-success="Bundle products updated.">
+      {% csrf_token %}
+      <p class="muted">Check products to include in this bundle. Saving updates the bundle's items list.</p>
+      <div id="mbp_product_list" style="display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto;padding:4px 0"></div>
+      <div class="cat-modal-actions">
+        <button type="button" class="btn btn-secondary" data-cat-close-modal="manageBundleProductsModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Hidden image-upload forms, submitted via AJAX from catalog-admin.js -->
+<form method="post" enctype="multipart/form-data" id="uploadProductImgForm" style="display:none">{% csrf_token %}<input type="file" name="file" accept="image/*" id="uploadProductImgInput"></form>
+<form method="post" enctype="multipart/form-data" id="uploadCatImgForm" style="display:none">{% csrf_token %}<input type="file" name="file" accept="image/*" id="uploadCatImgInput"></form>
+<form method="post" enctype="multipart/form-data" id="uploadBundleImgForm" style="display:none">{% csrf_token %}<input type="file" name="file" accept="image/*" id="uploadBundleImgInput"></form>
+{% endif %}
+
+<script src="{% static 'frontend/app.js' %}" defer></script>
+{% if can.admin_configure and user.is_staff %}<script src="{% static 'frontend/catalog-admin.js' %}" defer></script>{% endif %}
+
+
+</body>
+</html>

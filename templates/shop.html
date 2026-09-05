@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block og_type %}website{% endblock %}
+{% block content %}
+<section class="shop-header" itemscope itemtype="https://schema.org/CollectionPage">
+    <h1 itemprop="name">{% if active_category %}{{ active_category|title }} Spices - Buy Online in Pakistan{% else %}Organic Spice Collection - Buy Online in Pakistan{% endif %}</h1>
+    <p itemprop="description">{% if active_category %}Browse our selection of premium {{ active_category }} spices. Hand-sourced from Sindh, stone-ground, and delivered across Pakistan.{% else %}Every spice tells a story of Pakistani heritage. Hand-sourced, stone-ground, and packed with pride.{% endif %}</p>
+</section>
+{% if no_results %}<div class="wholesale-note" style="margin:0 auto 2rem">No products matched "<strong>{{ query }}</strong>". Showing all products instead - or try a shorter keyword.</div>{% elif query %}<div class="wholesale-note" style="margin:0 auto 2rem">{{ page_obj.object_list|length }} results for "<strong>{{ query }}</strong>".</div>{% endif %}
+<div class="shop-layout">
+    <aside class="shop-sidebar fade-up" aria-label="Filter by spice category">
+        <h3>Categories</h3>
+        <nav class="shop-categories" itemscope itemtype="https://schema.org/SiteNavigationElement">
+            <a href="/shop" class="{% if not active_category %}active{% endif %}" itemprop="url"><span itemprop="name">All Products</span></a>
+            {% for c in categories %}
+            <a href="/shop?category={{ c.slug }}" class="{% if active_category and active_category == c.slug %}active{% endif %}" itemprop="url"><span itemprop="name">{{ c.name }}</span></a>
+            {% endfor %}
+        </nav>
+    </aside>
+    <div>
+        <div class="shop-grid" itemscope itemtype="https://schema.org/ItemList">
+            {% for p in products %}
+            <div class="product-card fade-up" itemscope itemtype="https://schema.org/Product">
+                <a href="/product/{{ p.slug }}/" class="card-link">
+                    {% if p.best_seller %}<span class="card-badge card-badge-seller">Best Seller</span>{% endif %}
+                    {% if p.new_arrival %}<span class="card-badge card-badge-new">New</span>{% endif %}
+                    <img src="{{ p.image }}" alt="{{ p.name }} - Buy organic {{ p.name }} online in Pakistan" class="card-img" loading="lazy" itemprop="image" width="300" height="300">
+                </a>
+                <div class="product-info">
+                    <a href="/product/{{ p.slug }}/" class="card-link">
+                        <div class="product-name" itemprop="name">{{ p.name }}</div>
+                        <div class="product-tagline" itemprop="description">{{ p.tagline }}</div>
+                        <div class="product-price-row">
+                            <span class="product-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><span itemprop="price" data-card-price>{{ p.display_price }}</span><meta itemprop="priceCurrency" content="PKR"><meta itemprop="availability" content="{% if p.in_stock %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"></span>
+                            <span class="product-weight" data-card-weight>{{ p.display_weight }}</span>
+                        </div>
+                    </a>
+                    {% if p.sellable_variants %}
+                    <div class="gram-options">
+                        {% for variant in p.sellable_variants %}
+                        <button class="gram-btn{% if forloop.first %} active{% endif %}" data-action="select-card-gram" data-pid="{{ p.id }}" data-variant-id="{{ variant.id }}" data-weight="{{ variant.display_weight }}" data-price="{{ variant.public_price }}">{{ variant.display_weight }}</button>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if p.default_variant and p.in_stock %}
+                    <button class="btn-add-cart" data-action="add-card-to-cart" data-variant-id="{{ p.default_variant.id }}" data-price="{{ p.display_price }}" data-image="{{ p.default_variant.effective_image|default:p.image }}" data-weight="{{ p.display_weight }}" data-product-id="{{ p.id }}">Add to Cart</button>
+                    {% else %}
+                    <button class="btn-add-cart" disabled>Out of Stock</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% if page_obj.has_other_pages %}
+<nav class="pagination" aria-label="Product pages">
+  {% if page_obj.has_previous %}<a href="?{% if active_category %}category={{ active_category|urlencode }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?{% if active_category %}category={{ active_category|urlencode }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

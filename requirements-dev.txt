@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest>=9.0.3,<10.0
+pytest-django>=4.8,<5.0
+pip-audit>=2.7,<3.0

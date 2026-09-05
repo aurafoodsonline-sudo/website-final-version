@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="order-confirm fade-up">
+    <div class="checkmark">OK</div>
+    <h1>Order Confirmed</h1>
+    {% if order %}
+    <p style="font-size:.9375rem;margin-top:.5rem">Your order <strong>{{ order.reference }}</strong> has been placed successfully.</p>
+    <div class="order-details" style="max-width:520px;margin:1.5rem auto;text-align:left;background:rgba(10,10,10,0.02);border-radius:12px;padding:1.5rem;border:1px solid rgba(10,10,10,0.06)">
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Reference</span><span>{{ order.reference }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Status</span><span>{{ order.get_status_display }}</span></div>
+        {% if shipment %}
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Delivery</span><span>{{ shipment.get_status_display }}</span></div>
+        {% if shipment.eta_label %}<div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">ETA</span><span>{{ shipment.eta_label }}</span></div>{% endif %}
+        {% endif %}
+        {% if show_order_private_details %}
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Name</span><span>{{ order.customer_name }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Phone</span><span>{{ order.phone }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Address</span><span>{{ order.city }}, {{ order.address }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Payment</span><span>{{ order.payment_method|title }}</span></div>
+        {% endif %}
+        <hr style="border:none;border-top:1px solid rgba(10,10,10,0.06);margin:.5rem 0">
+        {% if show_order_private_details %}
+        {% for item in order.items.all %}
+        <div style="display:flex;justify-content:space-between;padding:.25rem 0;font-size:.875rem">
+            <span>{{ item.product_name }} x {{ item.quantity }} ({{ item.weight_option }})</span>
+            <span>Rs.{{ item.price|floatformat:0 }}</span>
+        </div>
+        {% endfor %}
+        <hr style="border:none;border-top:1px solid rgba(10,10,10,0.06);margin:.5rem 0">
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Subtotal</span><span>Rs.{{ order.subtotal|floatformat:0 }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:.35rem 0"><span style="color:var(--muted)">Delivery</span><span>{% if order.delivery_charge > 0 %}Rs.{{ order.delivery_charge|floatformat:0 }}{% else %}Free{% endif %}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:.5rem 0;font-weight:700;font-size:1rem;border-top:2px solid var(--gold);margin-top:.25rem"><span>Total</span><span>Rs.{{ order.total|floatformat:0 }}</span></div>
+        {% else %}
+        <div style="padding:.5rem 0;font-size:.875rem;color:var(--muted)">For privacy, customer and item details are only shown in the browser session that placed the order.</div>
+        {% endif %}
+    </div>
+    {% else %}
+    <p>Thank you for choosing Aura Foods. Your order has been placed successfully and we will start preparing it right away.</p>
+    {% endif %}
+    <p style="font-size:.875rem;color:var(--muted);margin-top:1rem">You will receive a confirmation call on your provided number within 30 minutes.</p>
+    <div style="margin-top:2.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="/shop" class="btn-primary">Continue Shopping</a>
+        <a href="/track-order/" class="btn-secondary">Track Order</a>
+        <a href="/" class="btn-secondary">Back to Home</a>
+    </div>
+</div>
+{% if order and show_order_private_details %}
+<div data-clear-checkout-storage="1" hidden></div>
+<div data-analytics-purchase="1" data-value="{{ order.total }}" data-item-count="{{ order.items.count }}" hidden></div>
+{% endif %}
+{% endblock %}

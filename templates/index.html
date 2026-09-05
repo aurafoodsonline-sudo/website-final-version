@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block og_type %}website{% endblock %}
+{% block head_extra %}
+<link rel="preload" as="image" href="/static/images/hero-spices.jpg" fetchpriority="high">
+{% endblock %}
+{% block content %}
+<section class="hero" itemscope itemtype="https://schema.org/WebPageElement">
+    <div class="hero-bg">
+        <img src="/static/images/hero-spices.jpg" alt="Organic Pakistani spices on rustic wooden table - Aura Foods premium collection" fetchpriority="high" itemprop="image">
+        <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+        <div class="hero-text fade-up">
+            <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z"/></svg> Hand-sourced · Stone-ground · Freshly packed</span>
+            <h1 class="hero-title">Pure & Premium <em>Organic Spices</em> from Pakistan</h1>
+            <p class="hero-subtitle">Freshly packed authentic spices from the fields, delivered across the Globe. Taste the heritage in every pinch.</p>
+            <div class="hero-actions">
+                <a href="/shop" class="btn-primary">Shop Now - Dive into the Spice Heaven</a>
+                <a href="/wholesale/" class="btn-secondary">Wholesale</a>
+            </div>
+            <div class="hero-features">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Crafted for Pure Taste</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> No Preservatives</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> Pakistan-wide Delivery</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" itemscope itemtype="https://schema.org/ItemList">
+    <div class="section-header fade-up">
+        <div class="section-eyebrow">Shop by Category</div>
+        <h2 class="section-title">Crafted Collections</h2>
+        <p class="section-subtitle">From everyday essentials to signature blends - explore our curated spice families.</p>
+    </div>
+    <div class="grid-3" itemprop="itemListElement">
+        {% for cat in categories %}
+        <a href="/shop?category={{ cat.slug }}" class="category-card" itemprop="significantLink" itemscope itemtype="https://schema.org/CategoryCode">
+            <img src="{{ cat.image }}?v=2" alt="{{ cat.name }} - Buy organic {{ cat.name }} online in Pakistan" loading="lazy" itemprop="image" width="400" height="300">
+            <div class="category-overlay"></div>
+            <div class="category-name">
+                <h3 itemprop="name">{{ cat.name }}</h3>
+                <span>Shop now <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section-muted" style="padding:5rem 1.5rem" itemscope itemtype="https://schema.org/ItemList">
+    <div class="section" style="padding:0">
+        <div class="section-header-left fade-up">
+            <div class="section-eyebrow">Best Sellers</div>
+            <h2 class="section-title">Loved in Pakistani Kitchens</h2>
+            <p class="section-subtitle">The pantry staples our customers reorder again and again.</p>
+        </div>
+        <div class="grid-4" itemprop="itemListElement">
+            {% for p in best_sellers %}
+            <div class="product-card fade-up" itemscope itemtype="https://schema.org/Product">
+                <a href="/product/{{ p.slug }}/" class="card-link">
+                    <span class="card-badge card-badge-seller">Best Seller</span>
+                    <img src="{{ p.image }}" alt="{{ p.name }} - Buy organic {{ p.name }} online in Pakistan" class="card-img" loading="lazy" itemprop="image" width="300" height="300">
+                </a>
+                <div class="product-info">
+                    <a href="/product/{{ p.slug }}/" class="card-link">
+                        <div class="product-name" itemprop="name">{{ p.name }}</div>
+                        <div class="product-tagline" itemprop="description">{{ p.tagline }}</div>
+                        <div class="product-price-row">
+                            <span class="product-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><span itemprop="price" data-card-price>{{ p.display_price }}</span><meta itemprop="priceCurrency" content="PKR"><meta itemprop="availability" content="{% if p.in_stock %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"></span>
+                            <span class="product-weight" data-card-weight>{{ p.display_weight }}</span>
+                        </div>
+                    </a>
+                    {% if p.sellable_variants %}
+                    <div class="gram-options">
+                        {% for variant in p.sellable_variants %}
+                    <button class="gram-btn{% if forloop.first %} active{% endif %}" data-action="select-card-gram" data-pid="{{ p.id }}" data-variant-id="{{ variant.id }}" data-weight="{{ variant.display_weight }}" data-price="{{ variant.public_price }}">{{ variant.display_weight }}</button>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if p.default_variant and p.in_stock %}
+                    <button class="btn-add-cart" data-action="add-card-to-cart" data-variant-id="{{ p.default_variant.id }}" data-price="{{ p.display_price }}" data-image="{{ p.default_variant.effective_image|default:p.image }}" data-weight="{{ p.display_weight }}" data-product-id="{{ p.id }}">Add to Cart</button>
+                    {% else %}
+                    <button class="btn-add-cart" disabled>Out of Stock</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header fade-up">
+        <div class="section-eyebrow">Why Aura Foods</div>
+        <h2 class="section-title">A Promise You Can Taste</h2>
+        <p class="section-subtitle">Six commitments that shape every jar we deliver.</p>
+    </div>
+    <div class="why-grid">
+        {% for item in why_items %}
+        <div class="why-card fade-up">
+            <div class="why-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">{{ item.svg | safe }}</svg>
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="story-section">
+    <div class="story-container">
+        <div class="story-image fade-up">
+            <div class="img-hover-switch">
+                <img src="/static/uploads/story-en.jpg" alt="Traditional spice grinding in Sindh, Pakistan - Aura Foods heritage process" class="img-default" loading="lazy" width="400" height="500">
+                <img src="/static/uploads/story-ur.jpg" alt="مصالحہ پیسنے کی روایتی تکنیک - Aura Foods کا معیار" class="img-hover" loading="lazy" width="400" height="500">
+            </div>
+            <div class="story-location">
+                <div class="story-location-label">From the fields of</div>
+                <div class="story-location-name">Kunri, Sindh</div>
+            </div>
+        </div>
+        <div class="story-content fade-up">
+            <div class="section-eyebrow">Our Quality Promise</div>
+            <h2 class="story-title">from fresh fields to <em>Your Spice Rack</em></h2>
+            <p class="story-text">We trace every spice back to the organic farms, from the chili capital of Asia. Each batch is sun-dried, hand-cleaned, stone-ground, and sealed within hours to lock the color and arouma.</p>
+            <div class="story-list">
+                <div class="story-list-item"><div class="story-dot"></div><div><div class="story-list-title">Heritage sourcing</div><div class="story-list-desc">Direct partnerships with organic farmers.</div></div></div>
+                <div class="story-list-item"><div class="story-dot"></div><div><div class="story-list-title">Triple-stage cleaning</div><div class="story-list-desc">Stones, stems and dust - all removed.</div></div></div>
+                <div class="story-list-item"><div class="story-dot"></div><div><div class="story-list-title">Cold stone-grinding</div><div class="story-list-desc">Preserves volatile oils and aroma.</div></div></div>
+                <div class="story-list-item"><div class="story-dot"></div><div><div class="story-list-title">Hygienic packaging</div><div class="story-list-desc">Sealed in food-grade facilities.</div></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" itemscope itemtype="https://schema.org/ItemList">
+    <div class="section-header fade-up">
+        <div class="section-eyebrow">Customer Love</div>
+        <h2 class="section-title">Trusted Across the Globe</h2>
+    </div>
+    <div class="grid-3">
+        {% for t in testimonials %}
+        <div class="testimonial-card fade-up" itemscope itemtype="https://schema.org/Review">
+            <div class="stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating"><meta itemprop="ratingValue" content="5"><meta itemprop="bestRating" content="5"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <p class="testimonial-text" itemprop="reviewBody">"{{ t.text }}"</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar" itemprop="author">{{ t.name|slice:"1" }}</div>
+                <div>
+                    <div class="testimonial-name" itemprop="author">{{ t.name }}</div>
+                    <div class="testimonial-city">{{ t.city }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section-muted" style="padding:5rem 1.5rem" itemscope itemtype="https://schema.org/ItemList">
+    <div class="section" style="padding:0">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow">Bundle Offers</div>
+            <h2 class="section-title">Curated Combos, Better Value</h2>
+            <p class="section-subtitle">Save more when you stock up on the essentials.</p>
+        </div>
+        <div class="grid-3">
+            {% for b in bundles %}
+            <div class="bundle-card fade-up">
+                <span class="bundle-badge">Save {{ b.save_percent }}%</span>
+                {% if b.image %}<div class="bundle-img-wrap"><img src="{{ b.image }}" alt="{{ b.name }} - Aura Foods spice bundle" style="width:100%;height:180px;object-fit:cover;border-radius:8px;margin-bottom:.75rem" loading="lazy" width="400" height="180"></div>{% endif %}
+                <div class="bundle-label">Bundle</div>
+                <h3 class="bundle-title">{{ b.name }}</h3>
+                <p class="bundle-items">{{ b.items }}</p>
+                <div class="bundle-price-row">
+                    <span class="bundle-price">Rs.{{ b.price }}</span>
+                    <span class="bundle-old">Rs.{{ b.old_price }}</span>
+                </div>
+                <a href="#" class="bundle-link" data-action="add-bundle-to-cart" data-bundle-id="{{ b.id }}">Shop the bundle <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section" itemscope itemtype="https://schema.org/Blog">
+    <div class="section-header fade-up">
+        <div class="section-eyebrow">Journal</div>
+        <h2 class="section-title">Stories from the Kitchen</h2>
+        <p class="section-subtitle">Tips, recipes, and tales from Pakistan's spice heartland.</p>
+    </div>
+    <div class="grid-3">
+        {% for post in blog_posts %}
+        <a href="/blog/{{ post.slug }}" class="blog-card fade-up" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+            <div class="blog-card-img"><img src="{{ post.image }}" alt="{{ post.title }} - Aura Foods blog" style="width:100%;height:100%;object-fit:cover" loading="lazy" itemprop="image" width="400" height="250"></div>
+            <div class="blog-card-meta"><span class="blog-card-cat" itemprop="articleSection">{{ post.category }}</span><span itemprop="timeRequired">{{ post.read_time }} read</span></div>
+            <h3 class="blog-card-title" itemprop="headline">{{ post.title }}</h3>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

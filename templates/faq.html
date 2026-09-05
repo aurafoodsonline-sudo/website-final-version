@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+    <div class="section-header">
+        <div class="section-eyebrow">Help Center</div>
+        <h1 class="section-title">Frequently Asked Questions</h1>
+        <p class="section-subtitle">Delivery, returns, refunds, spice storage, and order support.</p>
+    </div>
+    <div style="max-width:860px;margin:0 auto;display:grid;gap:1rem">
+        {% for faq in faqs %}
+        <article class="cart-summary" style="display:block">
+            <h2 style="font-size:1.125rem">{{ faq.question }}</h2>
+            <p style="color:var(--muted);line-height:1.7">{{ faq.answer|linebreaksbr }}</p>
+        </article>
+        {% empty %}
+        {% for title, answer in fallback_faqs %}
+        <article class="cart-summary" style="display:block">
+            <h2 style="font-size:1.125rem">{{ title }}</h2>
+            <p style="color:var(--muted);line-height:1.7">{{ answer }}</p>
+        </article>
+        {% endfor %}
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

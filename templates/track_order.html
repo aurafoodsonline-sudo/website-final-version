@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+    <div class="section-header">
+        <div class="section-eyebrow">Delivery</div>
+        <h1 class="section-title">Track Order</h1>
+        <p class="section-subtitle">Use your order reference and phone number to check delivery status.</p>
+    </div>
+    <form method="post" class="checkout-form" style="max-width:520px;margin:0 auto 2rem">
+        {% csrf_token %}
+        {% if error %}<div class="alert-error">{{ error }}</div>{% endif %}
+        <div class="form-group"><label for="reference">Order reference</label><input id="reference" name="reference" required></div>
+        <div class="form-group"><label for="phone">Phone</label><input id="phone" name="phone" required></div>
+        <button class="btn-checkout" type="submit">Track</button>
+    </form>
+    {% if order %}
+    <div class="cart-summary" style="display:block;max-width:640px;margin:0 auto">
+        <h2>Order {{ order.reference }}</h2>
+        <p>Status: <strong>{{ order.get_status_display }}</strong></p>
+        {% if shipment %}
+        <p>Delivery: <strong>{{ shipment.get_status_display }}</strong></p>
+        {% if shipment.courier_name %}<p>Courier: {{ shipment.courier_name }}</p>{% endif %}
+        {% if shipment.tracking_number %}<p>Tracking: {{ shipment.tracking_number }}</p>{% endif %}
+        {% if shipment.eta_label %}<p>Estimated delivery: {{ shipment.eta_label }}</p>{% endif %}
+        {% if shipment.public_note %}<p>{{ shipment.public_note }}</p>{% endif %}
+        {% else %}
+        <p>Shipment record is pending.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,1356 @@
+{
+  "schema": "aurafoods-release-manifest/v1",
+  "generated_at": "2026-08-10T17:44:28.212803+00:00",
+  "release": {
+    "filename": "test-release.zip",
+    "sha256": "a83d186b9f014bff27448f4404d86f3d4da3789d2d3f7d564853ebe641eaaab7",
+    "size": 19383183
+  },
+  "payload": {
+    "algorithm": "SHA-256",
+    "file_count": 268,
+    "files": [
+      {
+        "path": ".dockerignore",
+        "sha256": "575c728214ee000954396a51fc055263f21742f5d799df949d419e61d0249784",
+        "size": 144
+      },
+      {
+        "path": ".env.example",
+        "sha256": "13d2ec06ea47e4078fe3b2559b99f246d6086128007b5ab3f58585e1a27fa30b",
+        "size": 963
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "sha256": "19f2905d51ed5923804c2e44d1fac74ed0fd0eb9aeaa5234279f4ae24720da2d",
+        "size": 1504
+      },
+      {
+        "path": ".github/workflows/security.yml",
+        "sha256": "c8d1080903eabba3a0b2301177bb6e8f2347a64c77470c18239114967afdc6ca",
+        "size": 999
+      },
+      {
+        "path": ".gitignore",
+        "sha256": "58ae4b4de4c4d37e826b259a086f4e29d5f85e6f984ab0ff1b9baa11a84d87ab",
+        "size": 120
+      },
+      {
+        "path": ".vscode/settings.json",
+        "sha256": "f3703188c14621cc29722954c59d881e82b005d44c4c7bbf1b1fdc5d8853affe",
+        "size": 73
+      },
+      {
+        "path": "aurafoods_erp/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "aurafoods_erp/asgi.py",
+        "sha256": "077e1f51831376de34f522df101399236c22c241ea7775c0e7693f669645931e",
+        "size": 175
+      },
+      {
+        "path": "aurafoods_erp/settings.py",
+        "sha256": "98d952b7495766d5895f437d96d07a3e4088f29ad7c1f765c17ca388e3860039",
+        "size": 9928
+      },
+      {
+        "path": "aurafoods_erp/urls.py",
+        "sha256": "e878b5bb14c496df3506355dbbd0417ab429aec2297cca2b6b44b898619ba863",
+        "size": 2710
+      },
+      {
+        "path": "aurafoods_erp/wsgi.py",
+        "sha256": "ab5af7148587f79edf34e572bc34c07b296cf686d5ff8dc7c4f5dcf95126b782",
+        "size": 175
+      },
+      {
+        "path": "crm/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "crm/admin.py",
+        "sha256": "0f445da146f8415155a710f47142a1956a36eba6a30f1cdc8e7dc1853c651433",
+        "size": 757
+      },
+      {
+        "path": "crm/api.py",
+        "sha256": "7f6d807b791381f9043004ff24fa7796bf5ae760fe09b1fdd6e7b5dffe45e722",
+        "size": 6016
+      },
+      {
+        "path": "crm/apps.py",
+        "sha256": "4e140d6443bf4a9471954dcc7e2b274c0d98e0699962565c6bcdffc135105738",
+        "size": 192
+      },
+      {
+        "path": "crm/migrations/0001_initial.py",
+        "sha256": "474e6d111ae6e9b4a907b8d981cc181a7f1f054a38651798955ee854ce3e06a0",
+        "size": 12991
+      },
+      {
+        "path": "crm/migrations/0002_crminteraction_crm_interaction_has_subject_and_more.py",
+        "sha256": "7f5d5c20853b40e38e8cce1c96b045abfaddffbdb1129125b977b23116ab8cb5",
+        "size": 1224
+      },
+      {
+        "path": "crm/migrations/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "crm/models.py",
+        "sha256": "d8300a5ef1ec5d32c868ee4b9049de11752b1c88e06a32b8201f806fb2163b1f",
+        "size": 8289
+      },
+      {
+        "path": "crm/reports.py",
+        "sha256": "f8bc16d7ef90fff7f398b969c8cde7fec76e5e77384d358ad94273a9e50e6d46",
+        "size": 1716
+      },
+      {
+        "path": "crm/services.py",
+        "sha256": "bdc16938f26d2d4038b9d301962167082f4e86bf0a60e83f85f40ff3b0f8f6a2",
+        "size": 4238
+      },
+      {
+        "path": "crm/tests.py",
+        "sha256": "6c716982802eda2110eb6e367a7aa904dc513e748b4bdb9f2963c9f9b77fbef0",
+        "size": 6305
+      },
+      {
+        "path": "crm/urls.py",
+        "sha256": "ef903ef0d60bcbe0fab076a4dccce7520573997f8d412df07d63c4a95cd34cc0",
+        "size": 968
+      },
+      {
+        "path": "design-system/aurafoods-erp/MASTER.md",
+        "sha256": "4b528e4f069fafb7ea3bdfda503c8747fa1f40f0887699417562fb4054b4d209",
+        "size": 5489
+      },
+      {
+        "path": "docker-compose.yml",
+        "sha256": "d69f7ed1ea08902e2e103c34cb5486498c49ad47b007109f1d1ad8849af45b47",
+        "size": 1205
+      },
+      {
+        "path": "Dockerfile",
+        "sha256": "9da0ba7b7facaf0808566dc649aa0b79885403005d9bcaad8bea31b64baf59c5",
+        "size": 1463
+      },
+      {
+        "path": "docs/ANALYTICS_READINESS.md",
+        "sha256": "e693919bb4dd31c4e999be0e716e74d616ce5c13fa0df6acab7514ea412eeafa",
+        "size": 592
+      },
+      {
+        "path": "docs/COMPLIANCE_READINESS.md",
+        "sha256": "6bbdae99ab07384c4378bf4eff1352ae6c5b48ac01598bb1a9866a978ab5dd79",
+        "size": 1093
+      },
+      {
+        "path": "docs/DEPLOYMENT_RUNBOOK.md",
+        "sha256": "ea147ff6ec452dbc17b592e18f60253304a14f1d37dadfdd3282e730b19a0968",
+        "size": 2018
+      },
+      {
+        "path": "docs/EXTERNAL_EVIDENCE_REQUIRED.md",
+        "sha256": "8d5d86cb00f5446128ffc81f391ec105a144839827f27ce03b1120aaf3a84e79",
+        "size": 1633
+      },
+      {
+        "path": "docs/FINAL_ADVERSARIAL_AUDIT.md",
+        "sha256": "fe780f6602bf8ff1f1e175c63e3b9170701ebc3efb65606c8584637c7b14d475",
+        "size": 7139
+      },
+      {
+        "path": "docs/HOSTILE_SECURITY_CHECKLIST.md",
+        "sha256": "454ab15953fd0a8fb610c8007b48b4c2a2d6b8b03530377d79a63ac4494c9d93",
+        "size": 2509
+      },
+      {
+        "path": "docs/INTEGRATION_MATRIX.md",
+        "sha256": "be2e6808320fb01f9d64c96d162e982f33e09459e13e871fbee988f74fcc88ac",
+        "size": 2549
+      },
+      {
+        "path": "docs/NEW_DOMAIN_PERMISSION_MATRIX.md",
+        "sha256": "710e09cb99156760864f12dfdb68b6f2b28f4fed5f4350d06329562c29fe848b",
+        "size": 1479
+      },
+      {
+        "path": "docs/PERFORMANCE_AND_REPORT_SCALING.md",
+        "sha256": "62bffb968debe7ae5ae88c1f88c3dfdb76700ed32e5ceca83b869146a3da8975",
+        "size": 920
+      },
+      {
+        "path": "docs/POSTING_MATRIX.md",
+        "sha256": "4714d32dc90d65eb9591076d94c0ee09fc431a17a80291af01e3c3a4907ce24c",
+        "size": 6343
+      },
+      {
+        "path": "docs/SBOM_AND_SIGNING.md",
+        "sha256": "a26f7fe747801a23fa8605fcb977a606b30919a53a892a6ac9f2e1ea76ca626e",
+        "size": 1972
+      },
+      {
+        "path": "docs/SCHEDULED_TASKS.md",
+        "sha256": "f23703bd32ffff4c52eea8583046eee941db71d2d11269e947120d2e8e056c14",
+        "size": 2293
+      },
+      {
+        "path": "docs/SHIPPING_DELIVERY_READINESS.md",
+        "sha256": "d953d70557466c2f651d9a3bccd4b423f3b8fc9930177d438acc80d556efb07d",
+        "size": 898
+      },
+      {
+        "path": "docs/THIRD_PASS_CLAIM_AUDIT.md",
+        "sha256": "a5444fccbb763cd1714d224780de439bfcdd2add8750578d095f59223fab81bf",
+        "size": 2868
+      },
+      {
+        "path": "docs/UI_UX_PRO_MAX_FRONTEND_SYSTEM.md",
+        "sha256": "9a6b635fb5246e6a04cc70fda2d36c24351dacaef0d5498d24c0e5ceee8ea6ef",
+        "size": 2553
+      },
+      {
+        "path": "docs/UNIFIED_ARCHITECTURE.md",
+        "sha256": "473c43ab08a5aff149530f81ae509adcd23893cba3b8bb01917aa1319173e208",
+        "size": 2393
+      },
+      {
+        "path": "docs/UNIFIED_DEPLOYMENT_RUNBOOK.md",
+        "sha256": "dbc8e7cb0432d90d559859d1ae1683f6972f920e4e96771a651a1ca96d471678",
+        "size": 2462
+      },
+      {
+        "path": "docs/UNIFIED_RELEASE_SCORECARDS.md",
+        "sha256": "2550890d1cc475cb54392880937239d388bd4d0bfef70aad73514b514c174caa",
+        "size": 4155
+      },
+      {
+        "path": "erp/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "erp/admin.py",
+        "sha256": "54857b230ec36888b440f5e11f64915ad41d2ea8e04f0a40394b0c3a5f91344e",
+        "size": 20578
+      },
+      {
+        "path": "erp/api_urls.py",
+        "sha256": "340e3616f93fc90dbda579c11105394cc651dfa82faceed927e8db659848457e",
+        "size": 2547
+      },
+      {
+        "path": "erp/apps.py",
+        "sha256": "d10d57ded1957bac21b45a9dd7a8f8cec66bc5c751ee51b1f9ca4b0e5e61597d",
+        "size": 138
+      },
+      {
+        "path": "erp/conversions.py",
+        "sha256": "6a789966dbd234c21b665810b7bd810b4cf88d61f28b2940431ae69806127972",
+        "size": 728
+      },
+      {
+        "path": "erp/domain_reports.py",
+        "sha256": "fb7ec5d8c8c0475f8a16994fececfb3ad7efe8fa9a2abcfbe13d2f599426f64d",
+        "size": 11909
+      },
+      {
+        "path": "erp/domain_services.py",
+        "sha256": "fdae4850b1a7b58feba2e73f7b9aee268496c121e3da7286ae6d316eea307d9a",
+        "size": 12983
+      },
+      {
+        "path": "erp/exceptions.py",
+        "sha256": "32a26b84806f680bcc4c0a5234811f261b095c8ff85ae57978cfbae5af27f5d1",
+        "size": 1586
+      },
+      {
+        "path": "erp/export.py",
+        "sha256": "dded7aa1a93b5321dfdc6b3f013dcfd2ca71d59f82ce2dd7a339803163746a9c",
+        "size": 647
+      },
+      {
+        "path": "erp/management/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "erp/management/commands/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "erp/management/commands/backup_sqlite.py",
+        "sha256": "2cc297daa8948a24bcaf56c2a8eed40bccf6f2e95bbfb2026a662875d6b1a5ff",
+        "size": 1147
+      },
+      {
+        "path": "erp/management/commands/check_media_storage.py",
+        "sha256": "88caf24b1d84c13d339010995a8038957f00377aeacfed86186a0d9f5448638d",
+        "size": 2367
+      },
+      {
+        "path": "erp/management/commands/refresh_expiry_statuses.py",
+        "sha256": "fa900dc6fecea2aa677ea7df3040ea4ad33a8e0c21cf105745fb8848d28f1d12",
+        "size": 407
+      },
+      {
+        "path": "erp/management/commands/refresh_overdue_supplier_invoices.py",
+        "sha256": "88a6513498fb6f5c77fabe10db972f858a863c0e0d0c827e7d3bfbead1c2018a",
+        "size": 405
+      },
+      {
+        "path": "erp/management/commands/restore_sqlite.py",
+        "sha256": "0511864ab3fc418e1af83d0a3a3abfa048da6d4389ac1dfbae2bd75e5278800b",
+        "size": 1201
+      },
+      {
+        "path": "erp/management/commands/run_scheduled_erp_maintenance.py",
+        "sha256": "10a6c15570ad216aeaadc728d4d86a3bbb5bccf11668497c9476f877c0f6f3fb",
+        "size": 410
+      },
+      {
+        "path": "erp/management/commands/seed_aurafoods_demo.py",
+        "sha256": "7da332ce023d1078e067793e3921fa6c82dfdc1476c1bce716bd51df821628af",
+        "size": 13465
+      },
+      {
+        "path": "erp/management/commands/seed_erp_roles.py",
+        "sha256": "3f482a593cfbacf8f0fac66bb70c8898716246b6296bab6239821fdff3f0bca1",
+        "size": 3269
+      },
+      {
+        "path": "erp/middleware.py",
+        "sha256": "adc50ef748c09aad6b6c88939a90ea6477f71cfa8ab9387cbad3b7632874b292",
+        "size": 991
+      },
+      {
+        "path": "erp/migrations/0001_initial.py",
+        "sha256": "aa6cb85eecf39a27e9df432dcf30f26e5624d517bb9403d420ae1669d78d66a8",
+        "size": 41658
+      },
+      {
+        "path": "erp/migrations/0002_supplier_tax_category_supplier_tax_identifier_and_more.py",
+        "sha256": "ac2eb6b44522237f64c01c0c5e0f35fa50b4430ff2271ec709450df6615bd78c",
+        "size": 7131
+      },
+      {
+        "path": "erp/migrations/0003_add_purchase_requirement_recipe_landed_cost_coa.py",
+        "sha256": "3dbdd39fb681f45ffe80c5629a9b8e7d7664d88ab2762413638270d9355f26bd",
+        "size": 12216
+      },
+      {
+        "path": "erp/migrations/0004_v6_model_spec_gaps.py",
+        "sha256": "8b66fd1bbc71bba179adf2647c79a6abe394364afca169593a9490b39d79a6f2",
+        "size": 18700
+      },
+      {
+        "path": "erp/migrations/0005_recipe_code_non_unique.py",
+        "sha256": "693439b2b76fc8a142f10948e12b52a3c44782bc383f08508c27f14368225e0a",
+        "size": 381
+      },
+      {
+        "path": "erp/migrations/0006_payment_banking_grn_header.py",
+        "sha256": "167d262d6398d4096229bb0e94aa75e1175b5b0077c743fb3f2093017db02d05",
+        "size": 4820
+      },
+      {
+        "path": "erp/migrations/0007_system_settings_doc_series_cancelled_fields.py",
+        "sha256": "319b56e7d8a1fda44c1ec15216bd0ad4a4c24228e102a53c0fe3546848a5fa91",
+        "size": 2867
+      },
+      {
+        "path": "erp/migrations/0008_structural_models_v7.py",
+        "sha256": "499330f6d3734abe5ce5b6f434773ab5f10e146ac8963c8ba2b04a5d2318a178",
+        "size": 6996
+      },
+      {
+        "path": "erp/migrations/0009_d52_sales_readiness.py",
+        "sha256": "ef604c7ce7b36a5998923b9677f542135555a902d2c57eb9efc81ea64cdd0028",
+        "size": 8558
+      },
+      {
+        "path": "erp/migrations/0010_grnline_agreed_rate_snapshot_and_more.py",
+        "sha256": "bf716844e24115502ee9f2d134a9bb0dd6114c6fab3811744d7a36fa91e19382",
+        "size": 22397
+      },
+      {
+        "path": "erp/migrations/0011_customerdistributor_uq_customer_code_ci.py",
+        "sha256": "6093aec6efae4b65d61936506657429c155fdbfa473b3bd07a9be76b5f3869b1",
+        "size": 1597
+      },
+      {
+        "path": "erp/migrations/0012_scheduledtasklock.py",
+        "sha256": "fa6155e7f3bafefc4a6bcd12e5c53fe1a65ca9fda2ccd57a987d40862b22b435",
+        "size": 1467
+      },
+      {
+        "path": "erp/migrations/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "erp/models.py",
+        "sha256": "d4d68d3766100616d620f5ee5313e34f366b8b7943f7c20bd4fad5579cc515cf",
+        "size": 72842
+      },
+      {
+        "path": "erp/permissions.py",
+        "sha256": "edea00fed48fc895717d6aae574f7810f3707bff3cf5449247e8781d5d24eacb",
+        "size": 6920
+      },
+      {
+        "path": "erp/reports.py",
+        "sha256": "059d4d36c2c078bbbed4c69a78e99e864a9cad98d3ebb0d304bf9239fd6dc705",
+        "size": 72583
+      },
+      {
+        "path": "erp/scheduled_jobs.py",
+        "sha256": "7b67104266d56e4562568d6e1cec9274e850b44807c8dc37bff84c1fde915fec",
+        "size": 9177
+      },
+      {
+        "path": "erp/serializers.py",
+        "sha256": "2e515e12b2460a8e979e50ca4fbee986dda92bc37c8833ae74001693efd9d255",
+        "size": 22976
+      },
+      {
+        "path": "erp/services.py",
+        "sha256": "d5095e3637320a8d1c5833955c1fb8cef416a22161c07e7d007b67a9a9ae9927",
+        "size": 62269
+      },
+      {
+        "path": "erp/test_new_domains.py",
+        "sha256": "9a08b8ee4720c92e41553ea64b84dadf1d6772412ace154cbb1a509fd3a06c50",
+        "size": 28617
+      },
+      {
+        "path": "erp/test_scheduler_lock.py",
+        "sha256": "d7cc75dd2631bc2e3c79504af81c9802488a321b87829651e94fb33d00e7c3de",
+        "size": 3319
+      },
+      {
+        "path": "erp/tests.py",
+        "sha256": "aa1cbeaaf921f18dcfd291db4dc5df115d444e9072d8e7aecbc508ec50c0ce65",
+        "size": 121469
+      },
+      {
+        "path": "erp/views.py",
+        "sha256": "284410c9f31924b0edc611a50f9d20af835ae444f6dd9e268f6135f3fd4bddb2",
+        "size": 62100
+      },
+      {
+        "path": "frontend/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "frontend/apps.py",
+        "sha256": "9c02790d67a03ea0692f2aef6f3d9ffa46ee05b58f6ce1d8f3fb793f83187f1b",
+        "size": 148
+      },
+      {
+        "path": "frontend/static/frontend/app.css",
+        "sha256": "0aa80c73caaa5ef977d4791c5045ac6607f40382919aa8d810d9b9562a578b4a",
+        "size": 27118
+      },
+      {
+        "path": "frontend/static/frontend/app.js",
+        "sha256": "7fb1f1297c638b18fda64f6eac69e7a203a2b49da6b9b21812301f2f3e173708",
+        "size": 45835
+      },
+      {
+        "path": "frontend/static/frontend/receipt.js",
+        "sha256": "3c1dae7483acb6b429db9ce492076cbbc565d7e77293cb9bb0dac6089659f52c",
+        "size": 106
+      },
+      {
+        "path": "frontend/templates/frontend/app.html",
+        "sha256": "fdfced93e2c366306cf7eca293a2409769563433fde47cd7da8fd0020bf15acd",
+        "size": 114884
+      },
+      {
+        "path": "frontend/test_new_domains.py",
+        "sha256": "dd3f24910c556ef2b41782848ee1fb7c3ead3d2094a43ad325ff345e26c0e0c3",
+        "size": 4371
+      },
+      {
+        "path": "frontend/tests.py",
+        "sha256": "5c5c63146205ca86234da0c186c1289290cc13826a90ddee087da94c8dcc9801",
+        "size": 1479
+      },
+      {
+        "path": "frontend/urls.py",
+        "sha256": "09a8b05df62b4963a848afa4872939c96ede42a4938b5eb8e376f66d7fe9a1e5",
+        "size": 160
+      },
+      {
+        "path": "frontend/views.py",
+        "sha256": "7bcafe4771fdab903fe7bd10ac9916a4f8585d135dfbd8e57089b950791c83ae",
+        "size": 18905
+      },
+      {
+        "path": "INTEGRATION_REPAIR_NOTES.md",
+        "sha256": "6302ef141935313c8874b432a32ee410f280c3815c864f82bcb28a40883709c4",
+        "size": 8513
+      },
+      {
+        "path": "manage.py",
+        "sha256": "aaed6d80cccdec5d4d7780acd69f4810db0ae4bddcb5ac0a4818eb9f25bb85ea",
+        "size": 348
+      },
+      {
+        "path": "pytest.ini",
+        "sha256": "521468133f5202c8835af31377600faf81ee6d6f328b9dde7690ae1ff0574b8d",
+        "size": 102
+      },
+      {
+        "path": "README.md",
+        "sha256": "3c5e6262671a268d1ff4b4dbf231a697edbe7f846e404eaf9709e64ef8e38f0b",
+        "size": 1749
+      },
+      {
+        "path": "requirements-dev.txt",
+        "sha256": "27db02a56cf4dd097b225ac4edc949221a1eeb4e52da3c7a974a833784fe8107",
+        "size": 84
+      },
+      {
+        "path": "requirements.txt",
+        "sha256": "12e5c1b0ac7e2a14df0b458b9fd9b7c44c329327958baf340abfef331aa5e129",
+        "size": 290
+      },
+      {
+        "path": "sales/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "sales/admin.py",
+        "sha256": "1ade4ed0cb97cf850c654cd86df60bc0a886b0bcf317c4e6f41fd878f91e6ed1",
+        "size": 1693
+      },
+      {
+        "path": "sales/api.py",
+        "sha256": "6a44e43cfa7eb9115989c7d98841e1fb95a4d23d661f24ab5bc59b4af2d3a3a8",
+        "size": 2704
+      },
+      {
+        "path": "sales/apps.py",
+        "sha256": "dde156c911068d4cf3badc7bac7049d9c3554d499f22c28952e8ebfa91d1dba9",
+        "size": 186
+      },
+      {
+        "path": "sales/management/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "sales/management/commands/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "sales/management/commands/seed_unified_demo.py",
+        "sha256": "f2066d26b03abaa8289b07df81363b22d85c47141b59084ef9fa52a308e60778",
+        "size": 2547
+      },
+      {
+        "path": "sales/migrations/0001_initial.py",
+        "sha256": "3ed05fd36f7b5c6536d7e9777a763acbd41c9fc68abe14c8cff8afda8923b312",
+        "size": 27497
+      },
+      {
+        "path": "sales/migrations/0002_alter_salesinvoiceline_order_line.py",
+        "sha256": "20ab95360344286da442999e82c83f468f6990b4668c5bf31bc1c36659977c27",
+        "size": 524
+      },
+      {
+        "path": "sales/migrations/0003_map_exact_catalog_skus.py",
+        "sha256": "5fcdf4222ca5c8ab782081529d690954b841721cb62963128a924c08d1464dd6",
+        "size": 869
+      },
+      {
+        "path": "sales/migrations/0004_customerledgerentry_invoice_and_more.py",
+        "sha256": "e599d99d93c6d9af0bc96af8a56f95169421719dfed40856883cac2ad54801e6",
+        "size": 936
+      },
+      {
+        "path": "sales/migrations/0005_backfill_ledger_invoice_and_web_customer_codes.py",
+        "sha256": "c524041c47f443f9b73014c95f72097f13701416f6b002c390a0687fa441989b",
+        "size": 3813
+      },
+      {
+        "path": "sales/migrations/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "sales/models.py",
+        "sha256": "2e7134a888ca25ceeb01bc2843d23d50602ba9b0af3b00f601b31ef08350d645",
+        "size": 13998
+      },
+      {
+        "path": "sales/reports.py",
+        "sha256": "104dd7ad6a2d6b5a6af3da4fadbcb3541b1845be377e9864c4c287ebb8762c6a",
+        "size": 4493
+      },
+      {
+        "path": "sales/services.py",
+        "sha256": "109cd93b08cff910f03dc0b812d38c45030f2941d4059ae4ebb43020bf61c49c",
+        "size": 25670
+      },
+      {
+        "path": "sales/templates/sales/commerce_console.html",
+        "sha256": "bf9108f1b9b576dacc430cb47503f01f5a530525c6f4332538a05ac1a78a8cde",
+        "size": 11224
+      },
+      {
+        "path": "sales/tests.py",
+        "sha256": "531941927981710cc308123e761ae119c79b6b65ce365232277c4730c00cb60c",
+        "size": 18345
+      },
+      {
+        "path": "sales/urls.py",
+        "sha256": "a5ba7bfb9d85f2e8b1643c13c13aa2cee1c910c27d765fce81841fa99be043e2",
+        "size": 634
+      },
+      {
+        "path": "sales/views.py",
+        "sha256": "d76ee26ce34e079bd84e24bb9629a712049052ffed3d53a70ef3916920142f19",
+        "size": 9464
+      },
+      {
+        "path": "scripts/build_release_package.py",
+        "sha256": "5337432c875d33eb4e21dfb766ea34b4aaaf6325ca3bd474497b5650171ee0c7",
+        "size": 3802
+      },
+      {
+        "path": "scripts/generate_release_manifest.py",
+        "sha256": "e25e13fb3002801dce43cb178f5ca52db893d920e6f99a79a5c7a1af2f47efb7",
+        "size": 2621
+      },
+      {
+        "path": "scripts/generate_sbom.py",
+        "sha256": "411dbac9f66bc130a89083c3a60cc6243f9437e7fa6621158ec8618ae558b8ae",
+        "size": 4606
+      },
+      {
+        "path": "scripts/test_release_tools.py",
+        "sha256": "036a053587480a35c29ed9db56f7b7fe2a7ac938abb4b16ca21eb5fd57169557",
+        "size": 1990
+      },
+      {
+        "path": "scripts/verify_release_package.py",
+        "sha256": "86e410522e0db2318c45f14fcc36e2dda1827320f79b686d54d5cc72f56958f4",
+        "size": 3032
+      },
+      {
+        "path": "shop/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      {
+        "path": "shop/admin.py",
+        "sha256": "8b1ae3225df3ba1d5b1bd301c89022092e7082a70f3897d460f7d46eb380d200",
+        "size": 9709
+      },
+      {
+        "path": "shop/admin_bootstrap.py",
+        "sha256": "8037a1ea0b90af73aa34567d12cf6910b60ccc9aebfa6286a87bc71257d1be31",
+        "size": 1184
+      },
+      {
+        "path": "shop/apps.py",
+        "sha256": "84150bba286b1a5e83404e523141e3b730c3bd6cb1b9c3cc1f8b14a15679b7d4",
+        "size": 88
+      },
+      {
+        "path": "shop/management/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      {
+        "path": "shop/management/commands/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      {
+        "path": "shop/management/commands/check_media_storage.py",
+        "sha256": "89fe36d0195d6ae5494a4436e85438605e3cedfc96d05d936392611a252f4470",
+        "size": 2030
+      },
+      {
+        "path": "shop/management/commands/encrypt_mfa_secrets.py",
+        "sha256": "2677651df814fc622c6bdd7000d37eab0864e7aa5d0b9f438146e8808427cf13",
+        "size": 708
+      },
+      {
+        "path": "shop/management/commands/enroll_staff_mfa.py",
+        "sha256": "62a856221785d8a85fc53ff614685b57d6677a678850d576425857c199b01a39",
+        "size": 3092
+      },
+      {
+        "path": "shop/management/commands/generate_mfa_key.py",
+        "sha256": "d467d19e424165f4b048bc8b743365e2e8573e0e17a390ea61d644650ce67411",
+        "size": 293
+      },
+      {
+        "path": "shop/management/commands/inventory_report.py",
+        "sha256": "c8845d040b7c6bc95d75d67fb79b3420ec27dc098ff5e6c6c0271a9e5993f4fc",
+        "size": 5214
+      },
+      {
+        "path": "shop/management/commands/release_performance_check.py",
+        "sha256": "5001b539a3256362fbe054abefaa3f2e4921a15bc619d0455f9b6573b8f55047",
+        "size": 1596
+      },
+      {
+        "path": "shop/management/commands/release_smoke_check.py",
+        "sha256": "fc5303c7b72a07d0134a4045b962d2c0d1cdcf65a42b683865371f912a4f6ef3",
+        "size": 2437
+      },
+      {
+        "path": "shop/management/commands/seed.py",
+        "sha256": "56c64b819b2fb3237f9488e123ddf160cea3d764f8412134bd027646ace95c11",
+        "size": 15139
+      },
+      {
+        "path": "shop/middleware.py",
+        "sha256": "9dfd8298d708604e32fab5ef4c6969996cb933a24ba5508d2257469da7c89743",
+        "size": 1004
+      },
+      {
+        "path": "shop/migrations/0001_initial.py",
+        "sha256": "a5709c80f882f5a6015fa2e434aaede6f34226b72e38ca6a6e00e38119e5bac1",
+        "size": 6670
+      },
+      {
+        "path": "shop/migrations/0002_siterating.py",
+        "sha256": "fd2f0bcabb6b84063123b9e63a283f19c87a897ed0c43a6c002211a83727b641",
+        "size": 676
+      },
+      {
+        "path": "shop/migrations/0003_product_grammage_options.py",
+        "sha256": "ee731f48659b9c554441fce3c7c8418034cd37c379db7f55a6582687a27436c7",
+        "size": 413
+      },
+      {
+        "path": "shop/migrations/0004_order_orderitem.py",
+        "sha256": "8bc66c7a3a6ba494de1967ba11760949b01705f2f5adc5db666ec4fdf736c7cb",
+        "size": 2161
+      },
+      {
+        "path": "shop/migrations/0005_alter_bundle_old_price_alter_bundle_price_and_more.py",
+        "sha256": "c78f7b9f4fb48f012e3d2af48a20a2475723e02b15851f5ae2475ee9242b032e",
+        "size": 8487
+      },
+      {
+        "path": "shop/migrations/0006_order_idempotency_key_order_reference.py",
+        "sha256": "e0a06e1060863613ab10ca689a0243f5f5620ef3f44d1e7bd4d0d53e9463844b",
+        "size": 1329
+      },
+      {
+        "path": "shop/migrations/0007_adminactivitylog_orderstatuslog_paymenttransaction_and_more.py",
+        "sha256": "98eabb49f0a8e8a433df2f898f9cc924ea2b63e8793d2f6eaa4000074aa06f1a",
+        "size": 17928
+      },
+      {
+        "path": "shop/migrations/0008_contactmessage_ip_address_contactmessage_spam_status_and_more.py",
+        "sha256": "5a5ba7be9ddaaa1620cacbd48b70ae1fc00886423cc71e83203d9bf50f029d18",
+        "size": 1443
+      },
+      {
+        "path": "shop/migrations/0009_policypage_staffmfadevice_adminactivitylog_severity_and_more.py",
+        "sha256": "c1dc5d167cf00fcc491b4ef2368ceaaa82027a88d4fdd0781cb9afa73a92062c",
+        "size": 3970
+      },
+      {
+        "path": "shop/migrations/0010_encryptable_mfa_secret.py",
+        "sha256": "f2ffd48c3381adf28f5a48c6ff2f22d259a1af94244b0271be55374c64f27f5e",
+        "size": 385
+      },
+      {
+        "path": "shop/migrations/0011_customer_accounts.py",
+        "sha256": "e1e5b55d194b22bfeb3a6e34d0142e9b4136d0a5991eb21691a45d53ddac1a1c",
+        "size": 2188
+      },
+      {
+        "path": "shop/migrations/0012_deliveryzone_faqitem_customeremailverification_and_more.py",
+        "sha256": "6b7918bf29cfe288b01979d6020a7e60c32c8081b5e69b1c2c117d8cd96e9e7b",
+        "size": 8903
+      },
+      {
+        "path": "shop/migrations/0013_alter_productvariant_low_stock_threshold_and_more.py",
+        "sha256": "eba6164172a26bab57875e59d2b17da9c0b00757ae3ff25a3449a81cb37ae958",
+        "size": 836
+      },
+      {
+        "path": "shop/migrations/0014_seed_1kg_variants_and_loved_products.py",
+        "sha256": "015c62e82207916974db132c048605340e3484529a61f3cda05cdf55c9e67da6",
+        "size": 5448
+      },
+      {
+        "path": "shop/migrations/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      {
+        "path": "shop/models.py",
+        "sha256": "643be7c4439d62a9cfe773f51c44b32a31a7708a05027f18d4c779e1da37dea3",
+        "size": 41903
+      },
+      {
+        "path": "shop/permissions.py",
+        "sha256": "370485455c609892eaca098672a1e7657c7dc4d7849bac178e9c37cd9c614ea4",
+        "size": 576
+      },
+      {
+        "path": "shop/serializers.py",
+        "sha256": "5c3e2c5b3f703da3e33eda184d42ffb075b73cebf700812a5cf43c26ade54a73",
+        "size": 5823
+      },
+      {
+        "path": "shop/services/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      {
+        "path": "shop/services/audit.py",
+        "sha256": "4241f6e989e0d9e5a51bf6d6c4c3c68db66d31753b926f136a873aa34a605830",
+        "size": 1778
+      },
+      {
+        "path": "shop/services/customer_notifications.py",
+        "sha256": "2dd19f435e9c3471025a01ab7d1dbe32a115835bb862b818620290685366c8d0",
+        "size": 1589
+      },
+      {
+        "path": "shop/services/inventory.py",
+        "sha256": "f58ab5c716ced512ccc7cbcfaf28cc77bfc71fd5da9c8563c9bfcba92c756cb2",
+        "size": 772
+      },
+      {
+        "path": "shop/services/lifecycle.py",
+        "sha256": "bb32302ea728350972e766da46d6b25ee2d6558dc929731403daea2a0105e7b7",
+        "size": 7632
+      },
+      {
+        "path": "shop/services/mfa.py",
+        "sha256": "29bb131185cc83fb8c487825bf5297cbca3e10bdc1b7fcf34a9563d07446f8a3",
+        "size": 2113
+      },
+      {
+        "path": "shop/services/mfa_crypto.py",
+        "sha256": "4440292e802973c94e7656a13fbcf526bd7d22fb74c29a86e060bed89b88ff71",
+        "size": 1499
+      },
+      {
+        "path": "shop/services/orders.py",
+        "sha256": "79844477ece463bb53dc609a7247813a54e391a3d9ce04788b6534b09ce9bcbb",
+        "size": 4883
+      },
+      {
+        "path": "shop/services/payments.py",
+        "sha256": "3f6dd465d72da2439ff5e45e31b4db0b08608ce1eabc9ba5d98c2c5f9d60a1c9",
+        "size": 7939
+      },
+      {
+        "path": "shop/services/pricing.py",
+        "sha256": "d1f12dd99491dbf5aef541d4298cae098524d7cfd3f5f913c89bc3da559e73d2",
+        "size": 10204
+      },
+      {
+        "path": "shop/services/shipping.py",
+        "sha256": "22297c7f22c7e5b79af59dfc565c8479c58a758da263bcccd68488b162ed41ed",
+        "size": 2039
+      },
+      {
+        "path": "shop/services/uploads.py",
+        "sha256": "4928212b7db7fb0b504d46e41a85b3e621965386b41f2dde8351f0225b24d6ee",
+        "size": 2556
+      },
+      {
+        "path": "shop/templatetags/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      {
+        "path": "shop/templatetags/shop_extras.py",
+        "sha256": "a71501db253d54c16ff07962a0bd1700c46ea748a9c90a3c01338fc1e052bcc0",
+        "size": 723
+      },
+      {
+        "path": "shop/tests.py",
+        "sha256": "664826e22b8264202a97244db24248de837204ec2ed6c4c1e822cd3e871145d7",
+        "size": 77616
+      },
+      {
+        "path": "shop/tests_admin_bootstrap.py",
+        "sha256": "8060c6e8e4137a8e65a76da57f3885ea3707cf1b2c3ce69679ba8a8aeb41c786",
+        "size": 720
+      },
+      {
+        "path": "shop/urls.py",
+        "sha256": "3b76d77c777cd559c6133a69e0c9ed5e28edf3632e3a3e860b69f477b2c07b26",
+        "size": 6552
+      },
+      {
+        "path": "shop/views.py",
+        "sha256": "2534604d7fc9d9e89003357c890334f15e0eec62dba3cc41b7ec274a8b340876",
+        "size": 89671
+      },
+      {
+        "path": "static/css/accessibility.css",
+        "sha256": "c60b0c662b45f619e341b5bd39c71b5f105e4a647db86e3423ae522dca8b78e9",
+        "size": 1680
+      },
+      {
+        "path": "static/css/critical.css",
+        "sha256": "10e4247fe04cace1e38ace7a96c3f901fb5672b6d99e57fb70cb9006d7ea4a91",
+        "size": 3813
+      },
+      {
+        "path": "static/css/operations.css",
+        "sha256": "048dbc527b091b1145eb0df96a5874edcff5eedda930b87cfaf07e4b0a620f83",
+        "size": 5665
+      },
+      {
+        "path": "static/css/style.css",
+        "sha256": "bbad04980e142f63b0aa74f5047ac0f5b539f4900aeeba54d9491d546701aa30",
+        "size": 23380
+      },
+      {
+        "path": "static/images/bbq.jpg",
+        "sha256": "b68c034fb6d4dd9e3ef6e2f5e0c01f69604b377ac159a1f67a522aba19c41d73",
+        "size": 82292
+      },
+      {
+        "path": "static/images/biryani.jpg",
+        "sha256": "496390be22e50f5e75c33411788a177e48b43797876effab05741cc61b74a586",
+        "size": 108565
+      },
+      {
+        "path": "static/images/chaat.jpg",
+        "sha256": "496390be22e50f5e75c33411788a177e48b43797876effab05741cc61b74a586",
+        "size": 108565
+      },
+      {
+        "path": "static/images/chili.jpg",
+        "sha256": "005e1d2ced401ea05bac8bc2ff876c0ee4c8304a5a743f32fe1e02cdae645424",
+        "size": 91212
+      },
+      {
+        "path": "static/images/coriander-powder.jpg",
+        "sha256": "51268f1d8c4fb5ed55f81dc02f6e854995ae97371e04f6c73bc119291aa5cd29",
+        "size": 71027
+      },
+      {
+        "path": "static/images/coriander.jpg",
+        "sha256": "51268f1d8c4fb5ed55f81dc02f6e854995ae97371e04f6c73bc119291aa5cd29",
+        "size": 71027
+      },
+      {
+        "path": "static/images/favicon.png",
+        "sha256": "3e65877671466146dc391948699de0d6d8eebca3905738649cdf6e53f1d8b50c",
+        "size": 1370395
+      },
+      {
+        "path": "static/images/garam-masala.jpg",
+        "sha256": "7ee5c118e72f1fa16d8b6bde41a090cfeb3261054fe18c3cae1000424cce2fda",
+        "size": 137345
+      },
+      {
+        "path": "static/images/garam.jpg",
+        "sha256": "7ee5c118e72f1fa16d8b6bde41a090cfeb3261054fe18c3cae1000424cce2fda",
+        "size": 137345
+      },
+      {
+        "path": "static/images/hero-spices.jpg",
+        "sha256": "71c2ab5f63b9bae2439b0fe773c413c0341fb8cdfbcbd74345b916e4b0065509",
+        "size": 223430
+      },
+      {
+        "path": "static/images/karahi.jpg",
+        "sha256": "7ee5c118e72f1fa16d8b6bde41a090cfeb3261054fe18c3cae1000424cce2fda",
+        "size": 137345
+      },
+      {
+        "path": "static/images/logo.png",
+        "sha256": "3e65877671466146dc391948699de0d6d8eebca3905738649cdf6e53f1d8b50c",
+        "size": 1370395
+      },
+      {
+        "path": "static/images/placeholder.jpg",
+        "sha256": "71c2ab5f63b9bae2439b0fe773c413c0341fb8cdfbcbd74345b916e4b0065509",
+        "size": 223430
+      },
+      {
+        "path": "static/images/premium-blends.jpg",
+        "sha256": "496390be22e50f5e75c33411788a177e48b43797876effab05741cc61b74a586",
+        "size": 108565
+      },
+      {
+        "path": "static/images/quality-story.jpg",
+        "sha256": "a7ea914876f29c9413073aae578a32aa3a96e4f4a7ca5e2b4f847a264f7437fe",
+        "size": 128465
+      },
+      {
+        "path": "static/images/red-chili-powder.jpg",
+        "sha256": "005e1d2ced401ea05bac8bc2ff876c0ee4c8304a5a743f32fe1e02cdae645424",
+        "size": 91212
+      },
+      {
+        "path": "static/images/salt-range.jpg",
+        "sha256": "496390be22e50f5e75c33411788a177e48b43797876effab05741cc61b74a586",
+        "size": 108565
+      },
+      {
+        "path": "static/images/turmeric-powder.jpg",
+        "sha256": "a574ad471fb4f035c207577379226d0a34cdc625e2df3f750206209dd5e6ef68",
+        "size": 154812
+      },
+      {
+        "path": "static/images/turmeric.jpg",
+        "sha256": "a574ad471fb4f035c207577379226d0a34cdc625e2df3f750206209dd5e6ef68",
+        "size": 154812
+      },
+      {
+        "path": "static/js/admin.js",
+        "sha256": "10d1acc0b4ae77ec3e0a4d4f01211174675e9a1ab7cc9c3af6ad98edb905bcdb",
+        "size": 20332
+      },
+      {
+        "path": "static/js/main.js",
+        "sha256": "138e8a0a113c17f61f4abce6f0ede08b71d8e3768f18846e731dd003f76b2175",
+        "size": 24260
+      },
+      {
+        "path": "static/js/operations.js",
+        "sha256": "f59ca72ff2f88d8e88aa32a7db264716e49844187a181b9c34b315c71f4adc85",
+        "size": 373
+      },
+      {
+        "path": "static/uploads/bundle_10.jpeg",
+        "sha256": "d3927fd1f9055b36fcc1d757104460a63161b386bf1993b6415e98f96c817d33",
+        "size": 195920
+      },
+      {
+        "path": "static/uploads/bundle_11.jpeg",
+        "sha256": "8cbdef958857de05356a64c481e5638de69f9ebc52519fe3072e1eb8a7c754c5",
+        "size": 273751
+      },
+      {
+        "path": "static/uploads/bundle_13.jpeg",
+        "sha256": "d3927fd1f9055b36fcc1d757104460a63161b386bf1993b6415e98f96c817d33",
+        "size": 195920
+      },
+      {
+        "path": "static/uploads/bundle_14.jpeg",
+        "sha256": "8d4379543aac55bca229bee81ee5af7132f02b5d402fe41f87f86bc29461d861",
+        "size": 244716
+      },
+      {
+        "path": "static/uploads/bundle_15.jpeg",
+        "sha256": "55541441f14706029cfbf0727ad767d5109ea33c7705afedb3b5177e8b0df371",
+        "size": 201809
+      },
+      {
+        "path": "static/uploads/bundle_7.jfif",
+        "sha256": "4c6cc717095f92d90e148a4217074574b39c0d1c10a5345694a2cb948925e405",
+        "size": 209605
+      },
+      {
+        "path": "static/uploads/bundle_7.jpeg",
+        "sha256": "8d4379543aac55bca229bee81ee5af7132f02b5d402fe41f87f86bc29461d861",
+        "size": 244716
+      },
+      {
+        "path": "static/uploads/bundle_8.jpeg",
+        "sha256": "90611c49d819fd19a0ec03c9d0a69867c2962e992ed2ee42adc99b0f13156928",
+        "size": 205669
+      },
+      {
+        "path": "static/uploads/bundle_9.jpeg",
+        "sha256": "599d028bd484ab5934376c67bf10c0a1ce9e4c8ef9b7771858a2d7d018b7517f",
+        "size": 380246
+      },
+      {
+        "path": "static/uploads/category_1.jpeg",
+        "sha256": "c82d932c9465d46248f4dc5508ccb5a89e97709280bdc295788664b004e401c6",
+        "size": 222160
+      },
+      {
+        "path": "static/uploads/category_2.jpeg",
+        "sha256": "42fe3fcbce9c1a655761611e52e9a5ac928ea9f0503308c2f9b5a0f9871156f7",
+        "size": 262850
+      },
+      {
+        "path": "static/uploads/category_3.png",
+        "sha256": "cb246ab3c624e0329d348c1ccbb9dea3080f3706d9fed18d6154f66b24e8b255",
+        "size": 2207154
+      },
+      {
+        "path": "static/uploads/category_6.png",
+        "sha256": "8aa345a75931daea0491beb29e68e1c6e0221d0eb8cccd91dd8ca7f800b6141f",
+        "size": 2405212
+      },
+      {
+        "path": "static/uploads/hero.jpeg",
+        "sha256": "5c09c81b5febe796620e0c7ce901a714ee62d4d939edd8ef8ba93358a3694f2c",
+        "size": 276748
+      },
+      {
+        "path": "static/uploads/logo.png",
+        "sha256": "3e65877671466146dc391948699de0d6d8eebca3905738649cdf6e53f1d8b50c",
+        "size": 1370395
+      },
+      {
+        "path": "static/uploads/product01.jpeg",
+        "sha256": "55541441f14706029cfbf0727ad767d5109ea33c7705afedb3b5177e8b0df371",
+        "size": 201809
+      },
+      {
+        "path": "static/uploads/product02.jpeg",
+        "sha256": "1de8896a3d529483183be03f125cfb53739ba5a8497d4d33cbbf72bd3bd2766e",
+        "size": 210259
+      },
+      {
+        "path": "static/uploads/product03.jpeg",
+        "sha256": "8d4379543aac55bca229bee81ee5af7132f02b5d402fe41f87f86bc29461d861",
+        "size": 244716
+      },
+      {
+        "path": "static/uploads/product04.jpeg",
+        "sha256": "4ca4fcc83e4b6ba8728e37ff01a0811f5fdfdcb0ad4ca73f728e184715f33a90",
+        "size": 238295
+      },
+      {
+        "path": "static/uploads/product05.jpeg",
+        "sha256": "a0099cd20c81ac4a59f889cd1f003500a142200a41bab80c39173b699042bb9f",
+        "size": 267903
+      },
+      {
+        "path": "static/uploads/product06.jpeg",
+        "sha256": "bc352f184e0dd11c2ac781cd1b8bbc0876b4068c2d55fe8c08a855e2e50a1c7d",
+        "size": 268352
+      },
+      {
+        "path": "static/uploads/product07.jpeg",
+        "sha256": "bc28c20704303607dc2bc0a25656099b755cd9451569bc1dcde06b41abfb972f",
+        "size": 267376
+      },
+      {
+        "path": "static/uploads/product08.jpeg",
+        "sha256": "1f0f5f11403d8da4c8d7f7a674ee08af582b30ef112c76c3a713f07cad3cd90a",
+        "size": 236946
+      },
+      {
+        "path": "static/uploads/product09.jpeg",
+        "sha256": "5c09c81b5febe796620e0c7ce901a714ee62d4d939edd8ef8ba93358a3694f2c",
+        "size": 276748
+      },
+      {
+        "path": "static/uploads/product_10.jpeg",
+        "sha256": "2eca1e8041be8107457f990c60192d1c11d72bf9ce26f2e0bdc414e220ae79ec",
+        "size": 236122
+      },
+      {
+        "path": "static/uploads/product_11.jpeg",
+        "sha256": "a0099cd20c81ac4a59f889cd1f003500a142200a41bab80c39173b699042bb9f",
+        "size": 267903
+      },
+      {
+        "path": "static/uploads/product_12.jpeg",
+        "sha256": "1f0f5f11403d8da4c8d7f7a674ee08af582b30ef112c76c3a713f07cad3cd90a",
+        "size": 236946
+      },
+      {
+        "path": "static/uploads/product_13.jpg",
+        "sha256": "eceab644d46b87a74fe7ca8f9a3d415a91f4398af5bcc082c3281b894537d2cb",
+        "size": 291927
+      },
+      {
+        "path": "static/uploads/product_14.jpeg",
+        "sha256": "bc28c20704303607dc2bc0a25656099b755cd9451569bc1dcde06b41abfb972f",
+        "size": 267376
+      },
+      {
+        "path": "static/uploads/product_15.jpeg",
+        "sha256": "21fbf4893b6c9f2c3b70a69a3b0b9090bfb875cd5fbdd38d914dda95edd1e440",
+        "size": 257962
+      },
+      {
+        "path": "static/uploads/product_16.jpeg",
+        "sha256": "607ec54bcd33f65f06f28849d45a3ad9aa6deeff5a1b0d05e3abfe4be3d4df0c",
+        "size": 282539
+      },
+      {
+        "path": "static/uploads/product_17.jpeg",
+        "sha256": "b3acf01674892f7df7d8d4390cdfa8167d72223dc1e5f26102d6949fb88bbe9f",
+        "size": 278087
+      },
+      {
+        "path": "static/uploads/product_18.jpeg",
+        "sha256": "5c09c81b5febe796620e0c7ce901a714ee62d4d939edd8ef8ba93358a3694f2c",
+        "size": 276748
+      },
+      {
+        "path": "static/uploads/story-en.jpg",
+        "sha256": "40a5088aa0b8257019199c2921835c00f686885bfbb3d3cd28ffd0770856241b",
+        "size": 333973
+      },
+      {
+        "path": "static/uploads/story-ur.jpg",
+        "sha256": "9c8aa2d8df7069772080d021c6a2378c6e41dc297e7c96e1bdec308f9655eec6",
+        "size": 395896
+      },
+      {
+        "path": "templates/404.html",
+        "sha256": "09a2c850afeef9a7657d16e8e0fd2565d9b3d7d0771fa4188449dc73fbfb732b",
+        "size": 655
+      },
+      {
+        "path": "templates/about.html",
+        "sha256": "e60d36cb99006d1fbf1c78ea44885613a512d618843fb1222151e01612b08b42",
+        "size": 3433
+      },
+      {
+        "path": "templates/account_login.html",
+        "sha256": "1f9d65dc5d8f5092449474147eb9d761c06ac8161b30a9e49cc4a78a01ae73a4",
+        "size": 1137
+      },
+      {
+        "path": "templates/account_order_support.html",
+        "sha256": "14a9dc42fafda9587c33757ca1c555a10ab63864c34bb1af900b6d8f6c619b83",
+        "size": 1335
+      },
+      {
+        "path": "templates/account_password_reset.html",
+        "sha256": "24f9660bdadd270c2ea19af8ff39cbb887d2f9c24c9033ca98c48c82efa2feff",
+        "size": 809
+      },
+      {
+        "path": "templates/account_password_reset_confirm.html",
+        "sha256": "73ca4d3371233be5b54cb832d7ccb194a60ffd01bd218769ec8137169731e078",
+        "size": 974
+      },
+      {
+        "path": "templates/account_profile.html",
+        "sha256": "132e5121a5673faabaaab0b35e62fcdd23fb649b97d66c9418c90db7f0f55902",
+        "size": 3355
+      },
+      {
+        "path": "templates/account_register.html",
+        "sha256": "9894a946b4587e15be980cb9966d4bef20c8774faf37f68c0c8b5e2a4ebbe5e3",
+        "size": 1441
+      },
+      {
+        "path": "templates/account_verify_email.html",
+        "sha256": "1fa245459aa59b276e2b359cdf7204c29fe535baf8a1be00594b98797be166df",
+        "size": 469
+      },
+      {
+        "path": "templates/admin/dashboard.html",
+        "sha256": "d701b879ede2d2e8a1c08b9df669137521a671fb8727ed98e8fd140f5863828f",
+        "size": 54618
+      },
+      {
+        "path": "templates/admin/login.html",
+        "sha256": "a02055d37559de443c187584fb0e87ce4f69efdd453d954476f8be197c90f078",
+        "size": 2676
+      },
+      {
+        "path": "templates/base.html",
+        "sha256": "4d81137cc87335f40df7b2202f5c209bd119aa2906442ee578312b5dff473255",
+        "size": 17373
+      },
+      {
+        "path": "templates/blog.html",
+        "sha256": "9c9014e6571c3a26fabb74c8b9d174b26db322be10abd54d23e535a71331b487",
+        "size": 1621
+      },
+      {
+        "path": "templates/blog_detail.html",
+        "sha256": "e311990a785fbcd2a071d4a6325ced28fc2888a4c9f64508a7043920302624f3",
+        "size": 3601
+      },
+      {
+        "path": "templates/cart.html",
+        "sha256": "0f37eae0e93ad0ad487b938371dc2f914e87ed6927cca021c987522e541257e9",
+        "size": 1141
+      },
+      {
+        "path": "templates/checkout.html",
+        "sha256": "014a25c9bea639169af84a4b162be9090d3e36aeb9991c25b8f2706704eb0902",
+        "size": 4178
+      },
+      {
+        "path": "templates/contact.html",
+        "sha256": "8410fc18d4825f46ba9f71fe499ac9b0d4ac4cd9d462e7d7a6cfc4ad89a2f08a",
+        "size": 5998
+      },
+      {
+        "path": "templates/faq.html",
+        "sha256": "e0865582c2c504fdc22d6b89943cb7255700e2c1b3db1adcc8eddca74b9aea3d",
+        "size": 1041
+      },
+      {
+        "path": "templates/index.html",
+        "sha256": "503b695e0ea3c89c34229e402366ecf380310934c5edf9e3a14ce131a5af1231",
+        "size": 14019
+      },
+      {
+        "path": "templates/order_confirmation.html",
+        "sha256": "264b349c1ec1fa4f11d63b1d7bc8fdf6b90e296660fea0199fe88613ec590f4e",
+        "size": 4362
+      },
+      {
+        "path": "templates/policy_page.html",
+        "sha256": "93fc92049749936eb2481ca0351d7361d9b35fad38b1f709afa0f6abf946abdb",
+        "size": 673
+      },
+      {
+        "path": "templates/product.html",
+        "sha256": "edd8b521f2b5e448bee9004b4359c2646ae5ac428098368e6c71b277737f27e7",
+        "size": 12319
+      },
+      {
+        "path": "templates/robots.txt",
+        "sha256": "0a264e421db33390f9e04113102e1ef9669f86c5df99316fe8133035df8c2ad8",
+        "size": 177
+      },
+      {
+        "path": "templates/shop.html",
+        "sha256": "acbfae7d6e6f6795e8b750757bb42d11646ef0e813c1bd790b90b688d01f028f",
+        "size": 5070
+      },
+      {
+        "path": "templates/sitemap.xml",
+        "sha256": "4f30fba4cc1bd18e8298698bfab251ad481a83de02f02dee372607612fca5c68",
+        "size": 1421
+      },
+      {
+        "path": "templates/support.html",
+        "sha256": "7dc1f355c2f8708d9cfac96117ed5592098e7d6a5304bdb5b58e7d2dc1ba6d39",
+        "size": 2074
+      },
+      {
+        "path": "templates/track_order.html",
+        "sha256": "a9bee474cdd6e69936f91abc308b22e5026eb8df85132aedd1207d98c6cddb07",
+        "size": 1668
+      },
+      {
+        "path": "templates/wholesale.html",
+        "sha256": "c5bc4c1cf9e62e3f8fca4a0bfd83aff7c5f1e2a6f809d511e228ddd2373e0cbb",
+        "size": 3691
+      }
+    ]
+  },
+  "note": "The detached manifest and .sha256 file authenticate the final archive; embedding its own final hash would be self-referential."
+}
